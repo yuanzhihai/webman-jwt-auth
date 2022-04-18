@@ -13,6 +13,7 @@ use yzh52521\JwtAuth\Config;
  * @method static parseToken($token) 解析 Token
  * @method static getVerifyToken() 获取验证后的Token对象
  * @method static getUser() 获取登录用户对象
+ * @method static getConfig() 获取 Token 配置
  */
 class JwtAuth
 {
