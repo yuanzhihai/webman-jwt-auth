@@ -3,7 +3,7 @@
 ## install
 ```bash
 
-composer require xiaodi/jwt-auth
+composer require yzh52521/webman-jwt-auth
 
 ```
 
