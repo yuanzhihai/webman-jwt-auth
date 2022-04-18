@@ -39,18 +39,18 @@ $token = \yzh52521\JwtAuth\facade\JwtAuth::token($id, $cliams)->toString();
 var_dump($token);
 
 // 验证 token
-var_dump($auth->verify($token));
+var_dump(\yzh52521\JwtAuth\facade\JwtAuth::verify($token));
 
 // 验证后 token 对象
-var_dump($auth->getVerifyToken());
+var_dump(\yzh52521\JwtAuth\facade\JwtAuth::getVerifyToken());
 
 // 验证获取 id
-var_dump($auth->getVerifyToken()->claims()->get('jti'));
+var_dump(\yzh52521\JwtAuth\facade\JwtAuth::getVerifyToken()->claims()->get('jti'));
 
 // 解析 token
-var_dump($auth->parseToken($token));
+var_dump(\yzh52521\JwtAuth\facade\JwtAuth::parseToken($token));
 
 // 获取效验后的用户模型对象
-var_dump($auth->getUser());
+var_dump(\yzh52521\JwtAuth\facade\JwtAuth::getUser());
 ```
 
