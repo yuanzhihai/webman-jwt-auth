@@ -21,7 +21,8 @@ class JwtAuth
     public static function instance()
     {
         if (!static::$_instance) {
-            static::$_instance = new \yzh52521\JwtAuth\JwtAuth(new Config(config('plugin.yzh52521.jwt-auth.app.jwt')));
+            $config = config('plugin.yzh52521.jwt-auth.app.jwt');
+            static::$_instance = new \yzh52521\JwtAuth\JwtAuth(new Config($config));
         }
         return static::$_instance;
     }
