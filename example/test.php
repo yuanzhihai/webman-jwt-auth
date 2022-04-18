@@ -17,7 +17,7 @@ $options = [
     'auto_refresh'  => 0,
     'iss'           => 'client.tant',
     'aud'           => 'server.tant',
-    'event_handler' => EventHandler::class,
+    'event_handler' => Event::class,
     'user_model'    => \app\model\User::class
 ];
 
