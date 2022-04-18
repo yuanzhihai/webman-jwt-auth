@@ -3,6 +3,7 @@
 namespace yzh52521\JwtAuth;
 
 use Lcobucci\JWT\Token;
+use yzh52521\JwtAuth\event\EventHandler;
 use yzh52521\JwtAuth\Exception\InvalidArgumentException;
 use yzh52521\JwtAuth\user\AuthorizationUserInterface;
 

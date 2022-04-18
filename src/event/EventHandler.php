@@ -1,6 +1,6 @@
 <?php
 
-namespace yzh52521\JwtAuth;
+namespace yzh52521\JwtAuth\event;
 
 use Lcobucci\JWT\Token;
 

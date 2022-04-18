@@ -18,7 +18,7 @@ class User
         if ($class instanceof AuthorizationUserInterface) {
             $this->model = $class;
         } else {
-            throw new InvalidArgumentException('must be implements \think\User\AuthorizationUserInterface');
+            throw new InvalidArgumentException('must be implements yzh52521\JwtAuth\user\AuthorizationUserInterface');
         }
     }
 

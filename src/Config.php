@@ -8,6 +8,7 @@ use Lcobucci\JWT\Signer\Hmac;
 use Lcobucci\JWT\Signer\Key\LocalFileReference;
 use Lcobucci\JWT\Signer\Rsa;
 use Lcobucci\JWT\Signer;
+use yzh52521\JwtAuth\event\EventHandler;
 use yzh52521\JwtAuth\exception\InvalidArgumentException;
 
 class Config
@@ -276,7 +277,7 @@ class Config
     /**
      * 获取事件
      *
-     * @return \yzh52521\JwtAuth\EventHandler|null
+     * @return \yzh52521\JwtAuth\event\EventHandler|null
      */
     public function getEventHandler()
     {

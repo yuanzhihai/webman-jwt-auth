@@ -2,6 +2,7 @@
 
 namespace yzh52521\JwtAuth;
 
+use yzh52521\JwtAuth\event\EventHandler;
 use yzh52521\JwtAuth\exception\InvalidArgumentException;
 
 class Event
