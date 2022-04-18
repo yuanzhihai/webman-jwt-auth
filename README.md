@@ -14,9 +14,6 @@ composer require yzh52521/webman-jwt-auth
 
 <?php
 
-use JwtAuth\Config;
-use JwtAuth\JwtAuth;
-
 $options = [
     'signer_key'    => 'oP0qmqzHS4Vvml5a',
     'public_key'    => 'file://path/public.key',
