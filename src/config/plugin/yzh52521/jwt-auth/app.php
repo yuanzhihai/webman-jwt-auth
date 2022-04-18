@@ -16,7 +16,7 @@ return [
         'auto_refresh'  => 0,
         'iss'           => 'client.tant',
         'aud'           => 'server.tant',
-        'event_handler' => EventHandler::class,
-        'user_model'    => \app\common\model\User::class
+        'event_handler' => Event::class,
+        'user_model'    => \app\model\User::class
     ]
 ];
