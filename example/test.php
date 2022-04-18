@@ -1,7 +1,7 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/EventHandler.php';
+require __DIR__ . '/Event.php';
 
 $options = [
     'signer_key'    => 'oP0qmqzHS4Vvml5a11111',
@@ -18,7 +18,7 @@ $options = [
     'iss'           => 'client.tant',
     'aud'           => 'server.tant',
     'event_handler' => Event::class,
-    'user_model'    => \app\model\User::class
+    'user_model'    => User::class
 ];
 
 $id    = 1;
