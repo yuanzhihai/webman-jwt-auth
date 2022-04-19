@@ -54,7 +54,7 @@ class Config
      * Token 是否自动续签
      * @var bool
      */
-    protected $auto_refresh = 0;
+    protected $auto_refresh = false;
 
     /**
      *  登录失败返回code

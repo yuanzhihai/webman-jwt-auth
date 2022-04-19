@@ -12,7 +12,7 @@ return [
         'type'          => 'Header',
         'login_code'    => 50001,
         'refresh_code'  => 50002,
-        'auto_refresh'  => 0,
+        'auto_refresh'  => false,
         'iss'           => 'webman.client.com',
         'event_handler' => Event::class,
         'user_model'    => User::class
