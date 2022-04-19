@@ -62,7 +62,6 @@ class JwtAuth
      * 生成 Token
      * @param $id
      * @param array $cliams
-     *
      * @return Token
      */
     public function token($id, array $cliams = []): Token

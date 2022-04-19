@@ -22,6 +22,5 @@ $options = [
     'user_model'    => User::class
 ];
 
-$id    = 1;
-$token = \yzh52521\JwtAuth\facade\JwtAuth::token($id, ['time' => time()])->toString();
+$token = \yzh52521\JwtAuth\facade\JwtAuth::token(1, ['id' => 1, 'time' => time()])->toString();
 // var_dump($auth->parseToken($token));

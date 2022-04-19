@@ -30,8 +30,8 @@ $options = [
 // 用户 id
 $id = 1;
 // 附带参数
-$cliasm = [];
-$token = \yzh52521\JwtAuth\facade\JwtAuth::token($id, $cliams)->toString();
+$param = [];
+$token = \yzh52521\JwtAuth\facade\JwtAuth::token($id, $param)->toString();
 
 // 生成 token
 var_dump($token);
@@ -42,7 +42,6 @@ $payload =\yzh52521\JwtAuth\facade\JwtAuth::verify($token);
  验证后 token 
 var_dump($payload);
 
-$uid = $payload['jti'];
 
 // 验证后 token 对象
 var_dump(\yzh52521\JwtAuth\facade\JwtAuth::getVerifyToken());

@@ -66,7 +66,7 @@ class Jwt
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now)
             ->expiresAt($this->getExpiryDateTime($now))
-            ->relatedTo((string)$identifier);
+            ->relatedTo($this->config->getSubject());
 
         foreach ($claims as $key => $value) {
             $builder->withClaim($key, $value);
@@ -75,16 +75,6 @@ class Jwt
         return $builder->getToken($this->jwtConfiguration->signer(), $this->jwtConfiguration->signingKey());
     }
 
-    /**
-     * Not Before
-     * @param $now
-     * @return DateTimeImmutable
-     */
-    protected function getNotBeforeDateTime($now): DateTimeImmutable
-    {
-        $ttl = (string)$this->config->getNotBefore();
-        return $now->modify("+{$ttl} sec");
-    }
 
     /**
      * 过期时间

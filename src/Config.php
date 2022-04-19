@@ -20,12 +20,6 @@ class Config
     protected $signer_key = null;
 
     /**
-     * 生成后 一定时间内不能使用
-     * @var number
-     */
-    protected $not_before = 0;
-
-    /**
      * Token 有效期
      * @var number
      */
@@ -60,7 +54,7 @@ class Config
      * Token 是否自动续签
      * @var bool
      */
-    protected $auto_refresh = false;
+    protected $auto_refresh = 0;
 
     /**
      *  登录失败返回code
@@ -189,6 +183,12 @@ class Config
         return $this->refresh_ttL;
     }
 
+
+    public function getSubject()
+    {
+        return md5(uniqid() . time() . rand(100000, 9999999));
+    }
+
     /**
      * 获取iss
      *
@@ -200,15 +200,6 @@ class Config
     }
 
 
-    /**
-     * 获取not_before
-     *
-     * @return number
-     */
-    public function getNotBefore(): int
-    {
-        return $this->not_before;
-    }
 
     /**
      * 获取加密对象
