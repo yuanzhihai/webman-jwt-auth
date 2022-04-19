@@ -18,13 +18,11 @@ $options = [
     'signer_key'    => 'oP0qmqzHS4Vvml5a',
     'public_key'    => 'file://path/public.key',
     'private_key'   => 'file://path/private.key',
-    'not_before'    => 0,
     'signer'        => 'Lcobucci\JWT\Signer\Hmac\Sha256',
     'type'          => 'Header',
     'relogin_code'  => 50001,
     'refresh_code'  => 50002,
-    'iss'           => 'client.tant',
-    'aud'           => 'server.tant',
+    'iss'           => 'webman.client.com',
     'event_handler' => Event::class,
     'user_model'    => \app\common\model\User::class
 ];
@@ -39,7 +37,12 @@ $token = \yzh52521\JwtAuth\facade\JwtAuth::token($id, $cliams)->toString();
 var_dump($token);
 
 // 验证 token
-var_dump(\yzh52521\JwtAuth\facade\JwtAuth::verify($token));
+$payload =\yzh52521\JwtAuth\facade\JwtAuth::verify($token);
+
+ 验证后 token 
+var_dump($payload);
+
+$uid = $payload['jti'];
 
 // 验证后 token 对象
 var_dump(\yzh52521\JwtAuth\facade\JwtAuth::getVerifyToken());

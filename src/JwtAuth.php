@@ -4,7 +4,7 @@ namespace yzh52521\JwtAuth;
 
 use Lcobucci\JWT\Token;
 use yzh52521\JwtAuth\event\EventHandler;
-use yzh52521\JwtAuth\Exception\InvalidArgumentException;
+use yzh52521\JwtAuth\exception\TokenInvalidException;
 use yzh52521\JwtAuth\user\AuthorizationUserInterface;
 
 class JwtAuth
@@ -77,13 +77,15 @@ class JwtAuth
     /**
      * 检测合法性
      * @param $token
-     * @return bool
+     * @return array
      */
-    public function verify($token): bool
+    public function verify($token): array
     {
-        $flag = $this->jwt->validate($token);
+        $jwt = $this->jwt->validate($token);
+
         $this->event && $this->event->verify($this->parseToken($token));
-        return $flag;
+
+        return $jwt;
     }
 
     /**
@@ -116,6 +118,6 @@ class JwtAuth
             return $this->user->get($this->jwt);
         }
 
-        throw new InvalidArgumentException('jwt.user_model required');
+        throw new TokenInvalidException('jwt.user_model required');
     }
 }

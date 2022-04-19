@@ -2,7 +2,7 @@
 
 namespace yzh52521\JwtAuth;
 
-use yzh52521\JwtAuth\exception\InvalidArgumentException;
+use yzh52521\JwtAuth\exception\TokenInvalidException;
 use yzh52521\JwtAuth\user\AuthorizationUserInterface;
 
 class User
@@ -18,7 +18,7 @@ class User
         if ($class instanceof AuthorizationUserInterface) {
             $this->model = $class;
         } else {
-            throw new InvalidArgumentException('must be implements yzh52521\JwtAuth\user\AuthorizationUserInterface');
+            throw new TokenInvalidException('must be implements yzh52521\JwtAuth\user\AuthorizationUserInterface');
         }
     }
 

@@ -9,7 +9,7 @@ use Lcobucci\JWT\Signer\Key\LocalFileReference;
 use Lcobucci\JWT\Signer\Rsa;
 use Lcobucci\JWT\Signer;
 use yzh52521\JwtAuth\event\EventHandler;
-use yzh52521\JwtAuth\exception\InvalidArgumentException;
+use yzh52521\JwtAuth\exception\TokenInvalidException;
 
 class Config
 {
@@ -55,11 +55,6 @@ class Config
      */
     protected $iss = 'client.xxx.com';
 
-    /**
-     * Token 接收方
-     * @var string
-     */
-    protected $aud = 'server.xxx.com';
 
     /**
      * Token 是否自动续签
@@ -118,7 +113,7 @@ class Config
     public function getHmacKey(): Key
     {
         if (empty($this->signer_key)) {
-            throw new InvalidArgumentException('config signer_key required.', 500);
+            throw new TokenInvalidException('config signer_key required.', 500);
         }
 
         return InMemory::base64Encoded((string)$this->signer_key);
@@ -150,7 +145,7 @@ class Config
         } else if ($signer instanceof Hmac) {
             return $this->getHmacKey();
         } else {
-            throw new InvalidArgumentException('not support.', 500);
+            throw new TokenInvalidException('not support.', 500);
         }
     }
 
@@ -204,15 +199,6 @@ class Config
         return $this->iss;
     }
 
-    /**
-     * 获取auid
-     *
-     * @return string
-     */
-    public function getAud(): string
-    {
-        return $this->aud;
-    }
 
     /**
      * 获取not_before

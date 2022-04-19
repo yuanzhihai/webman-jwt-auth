@@ -10,6 +10,8 @@ use Exception;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use yzh52521\JwtAuth\Exception\JwtException;
+use yzh52521\JwtAuth\exception\TokenInvalidException;
 
 class Jwt
 {
@@ -59,11 +61,10 @@ class Jwt
     {
         $now     = new DateTimeImmutable();
         $builder = $this->jwtConfiguration->builder()
-            ->permittedFor($this->config->getAud())
             ->issuedBy($this->config->getIss())
             ->identifiedBy((string)$identifier)
             ->issuedAt($now)
-            ->canOnlyBeUsedAfter($this->getNotBeforeDateTime($now))
+            ->canOnlyBeUsedAfter($now)
             ->expiresAt($this->getExpiryDateTime($now))
             ->relatedTo((string)$identifier);
 
@@ -100,19 +101,25 @@ class Jwt
      * 解析 Token
      * @param string $token
      * @return Token
+     * @throws TokenInvalidException
      */
     public function parseToken(string $token): Token
     {
-        return $this->jwtConfiguration->parser()->parse($token);
+        try {
+            return $this->jwtConfiguration->parser()->parse($token);
+        } catch (JwtException $e) {
+            throw new TokenInvalidException('Could not decode token: ' . $e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
      * 效验 Token
      *
      * @param string $token
-     * @return bool
+     * @return array
+     * @throws TokenInvalidException
      */
-    public function validate(string $token): bool
+    public function validate(string $token): array
     {
         $this->token = $this->parseToken($token);
 
@@ -125,7 +132,19 @@ class Jwt
 
         $constraints = $jwtConfiguration->validationConstraints();
 
-        return $jwtConfiguration->validator()->validate($this->token, ...$constraints);
+        if (!$jwtConfiguration->validator()->validate($this->token, ...$constraints)) {
+            throw new TokenInvalidException('Token Signature could not be verified.');
+        }
+        return collect($this->token->claims()->all())
+            ->map(function ($claim) {
+                if (is_a($claim, \DateTimeImmutable::class)) {
+                    return $claim->getTimestamp();
+                }
+                return is_object($claim) && method_exists($claim, 'getValue')
+                    ? $claim->getValue()
+                    : $claim;
+            })
+            ->toArray();
     }
 
     /**
@@ -151,6 +170,6 @@ class Jwt
             return $this->token;
         }
 
-        throw new Exception('Not logged in');
+        throw new JwtException('Not logged in');
     }
 }
