@@ -2,6 +2,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/Event.php';
+require __DIR__ . '/User.php';
 
 $options = [
     'signer_key'    => 'oP0qmqzHS4Vvml5a11111',

@@ -17,6 +17,6 @@ return [
         'iss'           => 'client.tant',
         'aud'           => 'server.tant',
         'event_handler' => Event::class,
-        'user_model'    => \app\model\User::class
+        'user_model'    => User::class
     ]
 ];

@@ -57,21 +57,32 @@ class Jwt
      */
     public function make($identifier, array $claims = []): Token
     {
-        $now = new DateTimeImmutable();
+        $now     = new DateTimeImmutable();
         $builder = $this->jwtConfiguration->builder()
             ->permittedFor($this->config->getAud())
             ->issuedBy($this->config->getIss())
             ->identifiedBy((string)$identifier)
             ->issuedAt($now)
-            ->canOnlyBeUsedAfter($now)
+            ->canOnlyBeUsedAfter($this->getNotBeforeDateTime($now))
             ->expiresAt($this->getExpiryDateTime($now))
-            ->relatedTo((string) $identifier);
+            ->relatedTo((string)$identifier);
 
         foreach ($claims as $key => $value) {
             $builder->withClaim($key, $value);
         }
 
         return $builder->getToken($this->jwtConfiguration->signer(), $this->jwtConfiguration->signingKey());
+    }
+
+    /**
+     * Not Before
+     * @param $now
+     * @return DateTimeImmutable
+     */
+    protected function getNotBeforeDateTime($now): DateTimeImmutable
+    {
+        $ttl = (string)$this->config->getNotBefore();
+        return $now->modify("+{$ttl} sec");
     }
 
     /**
