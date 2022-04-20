@@ -205,10 +205,11 @@ class Jwt
         $token     = $this->make($jti, $claims);
         $refreshAt = $this->config->getRefreshTTL();
 
-        header('Access-Control-Expose-Headers:Automatic-Renewal-Token,Automatic-Renewal-Token-RefreshAt');
-        header("Automatic-Renewal-Token:" . $token->toString());
-        header("Automatic-Renewal-Token-RefreshAt:$refreshAt");
-
+        response()->withHeaders([
+            'Access-Control-Expose-Headers'     => 'Automatic-Renewal-Token,Automatic-Renewal-Token-RefreshAt',
+            'Automatic-Renewal-Token'           => $token->toString(),
+            'Automatic-Renewal-Token-RefreshAt' => $refreshAt
+        ]);
         return $token;
     }
 
