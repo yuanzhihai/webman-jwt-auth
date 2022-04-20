@@ -56,16 +56,6 @@ class Config
      */
     protected $auto_refresh = false;
 
-    /**
-     *  登录失败返回code
-     * @var string
-     */
-    protected $login_code = 50001;
-    /**
-     * 刷新失败返回code
-     * @var string
-     */
-    protected  $refresh_code = 50002;
 
     /**
      * Token 用户模型
@@ -211,25 +201,6 @@ class Config
         return new $this->signer;
     }
 
-    /**
-     * 获取重新登录code
-     *
-     * @return string
-     */
-    public function getReloginCode()
-    {
-        return $this->login_code;
-    }
-
-    /**
-     * 获取刷新code
-     *
-     * @return string
-     */
-    public function getRefreshCode()
-    {
-        return $this->refresh_code;
-    }
 
     /**
      * 获取是否自动续签
