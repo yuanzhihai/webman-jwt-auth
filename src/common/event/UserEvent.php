@@ -11,22 +11,22 @@ class UserEvent implements \yzh52521\JwtAuth\event\EventHandler
 
     public function __construct($app)
     {
-       $this->app = $app;
+        $this->app = $app;
     }
 
 
     public function login(Token $token)
     {
-    // todo
+        // todo
     }
 
     public function logout(Token $token)
     {
-    // todo
+        // todo
     }
 
     public function verify(Token $token)
     {
-    // todo
+        // todo
     }
 }

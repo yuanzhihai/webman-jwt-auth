@@ -19,7 +19,7 @@ class Install
      */
     public static function install()
     {
-        static::copyFile(__DIR__ . '/UserEvent.tpl', app_path() . '/common/event/UserEvent.php');
+        self::copyFile(__DIR__ . '/common/event', app_path() . '/common/event');
         static::installByRelation();
     }
 
@@ -73,7 +73,7 @@ class Install
         }
     }
 
-    public static function copyFile($source, $destination)
+    protected static function copyFile($source, $destination, $child = 1)
     {
         if (!is_dir($source)) {
             echo("Error:the $source is not a direction!");
@@ -87,7 +87,13 @@ class Install
         $handle = dir($source);
         while ($entry = $handle->read()) {
             if (($entry !== ".") && ($entry !== "..")) {
-                copy($source . "/" . $entry, $destination . "/" . $entry);
+                if (is_dir($source . "/" . $entry)) {
+                    if ($child) {
+                        self::copyFile($source . "/" . $entry, $destination . "/" . $entry, $child);
+                    }
+                } else {
+                    copy($source . "/" . $entry, $destination . "/" . $entry);
+                }
             }
         }
     }
