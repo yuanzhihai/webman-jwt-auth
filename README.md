@@ -14,7 +14,6 @@ composer require yzh52521/webman-jwt-auth
 
 <?php
 return [
-    'stores' => [
        'stores' => [
         // 单应用
         'default' => [
