@@ -12,9 +12,6 @@ class Header extends RequestToken
         if ($authorization && preg_match('/Bearer\s*(\S+)\b/i', $authorization, $matches)) {
             $token = $matches[1];
         }
-        if (!$token) {
-            return;
-        }
 
         return $token;
     }

@@ -2,11 +2,9 @@
 
 namespace yzh52521\JwtAuth;
 
-use DateTimeImmutable;
 use Lcobucci\JWT\Token;
 use yzh52521\JwtAuth\event\EventHandler;
 use yzh52521\JwtAuth\exception\TokenInvalidException;
-use yzh52521\JwtAuth\exception\TokenRefreshExpiredException;
 use yzh52521\JwtAuth\user\AuthorizationUserInterface;
 
 class JwtAuth
@@ -155,6 +153,6 @@ class JwtAuth
             return $this->user->get($this->jwt);
         }
 
-        throw new TokenInvalidException('jwt.user_model required');
+        throw new TokenInvalidException('jwt.user_model required',500);
     }
 }

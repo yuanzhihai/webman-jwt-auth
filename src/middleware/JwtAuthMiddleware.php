@@ -28,7 +28,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
             $request->user = JwtAuth::getUser();
             return $next($request);
         } catch (JwtException $e) {
-            return response($e->getMessage(), 401);
+            throw new JwtException($e->getMessage(), $e->getCode());
         }
     }
 }

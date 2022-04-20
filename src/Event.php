@@ -19,7 +19,7 @@ class Event
             if ($class instanceof EventHandler) {
                 $this->handle = $class;
             } else {
-                throw new TokenInvalidException('must be implements yzh52521\JwtAuth\event\EventHandler');
+                throw new TokenInvalidException('must be implements yzh52521\JwtAuth\event\EventHandler',500);
             }
         }
     }

@@ -126,7 +126,7 @@ class Jwt
         $constraints = $jwtConfiguration->validationConstraints();
 
         if (!$jwtConfiguration->validator()->validate($this->token, ...$constraints)) {
-            throw new TokenInvalidException('Token Signature could not be verified.');
+            throw new TokenInvalidException('Token Signature could not be verified.',500);
         }
         return collect($this->token->claims()->all())
             ->map(function ($claim) {
@@ -161,10 +161,10 @@ class Jwt
                 if (!$this->isRefreshExpired($now)) {
                     $this->token = $this->automaticRenewalToken();
                 } else {
-                    throw new TokenRefreshExpiredException('The token is refresh expired');
+                    throw new TokenRefreshExpiredException('The token is refresh expired', 402);
                 }
             }
-            throw new TokenExpiredException('The token is expired.');
+            throw new TokenExpiredException('The token is expired.', 401);
         }
     }
 
@@ -236,6 +236,6 @@ class Jwt
             return $this->token;
         }
 
-        throw new JwtException('Not logged in');
+        throw new JwtException('Not logged in',404);
     }
 }
