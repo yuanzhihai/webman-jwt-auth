@@ -1,6 +1,6 @@
 <?php
 
-namespace yzh52521\JwtAuth;
+namespace yzh52521\JwtAuth\middleware;
 
 use Webman\App;
 use Webman\MiddlewareInterface;
@@ -10,7 +10,7 @@ use yzh52521\JwtAuth\exception\JwtException;
 use yzh52521\JwtAuth\handle\RequestToken;
 use yzh52521\JwtAuth\facade\JwtAuth;
 
-class JwtAuthMiddware implements MiddlewareInterface
+class JwtAuthMiddleware implements MiddlewareInterface
 {
     /**
      * @param App
