@@ -14,6 +14,7 @@ use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use yzh52521\JwtAuth\Exception\JwtException;
 use yzh52521\JwtAuth\exception\TokenExpiredException;
 use yzh52521\JwtAuth\exception\TokenInvalidException;
+use yzh52521\JwtAuth\exception\TokenRefreshExpiredException;
 
 class Jwt
 {
@@ -155,6 +156,14 @@ class Jwt
         $constraints = $jwtConfiguration->validationConstraints();
 
         if (!$jwtConfiguration->validator()->validate($this->token, ...$constraints)) {
+            if ($this->config->getAutoRefresh()) {
+                $now = new DateTimeImmutable();
+                if (!$this->isRefreshExpired($now)) {
+                    $this->automaticRenewalToken();
+                } else {
+                    throw new TokenRefreshExpiredException('The token is refresh expired');
+                }
+            }
             throw new TokenExpiredException('The token is expired.');
         }
     }
@@ -180,9 +189,9 @@ class Jwt
      * Token 自动续期
      *
      * @param string $token
-     * @return Token
+     * @return void
      */
-    public function automaticRenewalToken(string $token): Token
+    public function automaticRenewalToken()
     {
         $claims = $this->token->claims()->all();
 
@@ -200,8 +209,6 @@ class Jwt
         header('Access-Control-Expose-Headers:Automatic-Renewal-Token,Automatic-Renewal-Token-RefreshAt');
         header("Automatic-Renewal-Token:" . $token->toString());
         header("Automatic-Renewal-Token-RefreshAt:$refreshAt");
-
-        return $token;
     }
 
     /**

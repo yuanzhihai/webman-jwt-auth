@@ -11,7 +11,6 @@ class Install
      */
     protected static $pathRelation = array(
         'config/plugin/yzh52521/jwt-auth' => 'config/plugin/yzh52521/jwt-auth',
-        'common/event'                    => 'app/common/event',
     );
 
     /**
@@ -20,6 +19,7 @@ class Install
      */
     public static function install()
     {
+        copy(__DIR__ . '/UserEvent.tpl', app_path() . '/common/event/UserEvent.php');
         static::installByRelation();
     }
 

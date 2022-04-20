@@ -3,7 +3,7 @@
 namespace yzh52521\JwtAuth\facade;
 
 
-use app\common\event\UserEvent;
+use \app\common\event\UserEvent;
 
 /**
  * @see \yzh52521\JwtAuth\JwtAuth

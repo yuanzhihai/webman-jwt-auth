@@ -5,21 +5,21 @@ require __DIR__ . '/Event.php';
 require __DIR__ . '/User.php';
 
 $options = [
-    'signer_key'    => 'oP0qmqzHS4Vvml5a11111',
-    'public_key'    => 'file://path/public.key',
-    'private_key'   => 'file://path/private.key',
-    'not_before'    => 0,
-    'expires_at'    => 3600,
-    'refresh_ttL'   => 7200,
-    'signer'        => 'Lcobucci\JWT\Signer\Hmac\Sha256',
-    'type'          => 'Header',
-    'relogin_code'  => 50001,
-    'refresh_code'  => 50002,
-    'auto_refresh'  => false,
-    'iss'           => 'client.tant',
-    'aud'           => 'server.tant',
-    'event_handler' => Event::class,
-    'user_model'    => User::class
+    'stores' => [
+        'default' => [
+            'signer_key'    => 'oP0qmqzHS4Vvml5a11111',
+            'public_key'    => 'file://path/public.key',
+            'private_key'   => 'file://path/private.key',
+            'expires_at'    => 3600,
+            'refresh_ttL'   => 7200,
+            'signer'        => 'Lcobucci\JWT\Signer\Hmac\Sha256',
+            'type'          => 'Header',
+            'auto_refresh'  => false,
+            'iss'           => 'client.tant',
+            'event_handler' => Event::class,
+            'user_model'    => User::class
+        ]
+    ]
 ];
 
 $token = \yzh52521\JwtAuth\facade\JwtAuth::token(1, ['id' => 1, 'time' => time()])->toString();
