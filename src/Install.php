@@ -11,7 +11,7 @@ class Install
      */
     protected static $pathRelation = array(
         'config/plugin/yzh52521/jwt-auth' => 'config/plugin/yzh52521/jwt-auth',
-        'common/event'                    => 'common/event',
+        'common/event'                    => 'app/common/event',
     );
 
     /**
