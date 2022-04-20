@@ -113,10 +113,11 @@ public function verify()
 
 赋值方式
 
-  |类型 | 途径 | 标识 |
-  |Header | Authorization | Bearer Token |
-  |Cookie | Cookie| token |
-  |Url | Request | token |
+  | 类型 | 途径 | 标识 |
+  | ----- |-----| ----- |
+  | Header | Authorization | Bearer Token |
+  | Cookie | Cookie| token |
+  | Url | Request | token  |
 
 ## 过期自动续签
 auto_refresh => true
