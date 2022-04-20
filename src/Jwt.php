@@ -159,7 +159,7 @@ class Jwt
             if ($this->config->getAutoRefresh()) {
                 $now = new DateTimeImmutable();
                 if (!$this->isRefreshExpired($now)) {
-                    $this->automaticRenewalToken();
+                    $this->token = $this->automaticRenewalToken();
                 } else {
                     throw new TokenRefreshExpiredException('The token is refresh expired');
                 }
@@ -188,10 +188,9 @@ class Jwt
     /**
      * Token 自动续期
      *
-     * @param string $token
-     * @return void
+     * @return Token
      */
-    public function automaticRenewalToken()
+    public function automaticRenewalToken(): Token
     {
         $claims = $this->token->claims()->all();
 
@@ -209,6 +208,8 @@ class Jwt
         header('Access-Control-Expose-Headers:Automatic-Renewal-Token,Automatic-Renewal-Token-RefreshAt');
         header("Automatic-Renewal-Token:" . $token->toString());
         header("Automatic-Renewal-Token-RefreshAt:$refreshAt");
+
+        return $token;
     }
 
     /**
