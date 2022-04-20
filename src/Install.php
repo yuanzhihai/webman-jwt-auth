@@ -19,7 +19,7 @@ class Install
      */
     public static function install()
     {
-        copy(__DIR__ . '/UserEvent.tpl', app_path() . '/common/event/UserEvent.php');
+        static::copyFile(__DIR__ . '/UserEvent.tpl', app_path() . '/common/event/UserEvent.php');
         static::installByRelation();
     }
 
@@ -70,6 +70,25 @@ class Install
                 continue;
             }
             remove_dir($path);
+        }
+    }
+
+    public static function copyFile($source, $destination)
+    {
+        if (!is_dir($source)) {
+            echo("Error:the $source is not a direction!");
+            return 0;
+        }
+        if (!is_dir($destination)) {
+            if (!mkdir($destination, 0777) && !is_dir($destination)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $destination));
+            }
+        }
+        $handle = dir($source);
+        while ($entry = $handle->read()) {
+            if (($entry !== ".") && ($entry !== "..")) {
+                copy($source . "/" . $entry, $destination . "/" . $entry);
+            }
         }
     }
 
