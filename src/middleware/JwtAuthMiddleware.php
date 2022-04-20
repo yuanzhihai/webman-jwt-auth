@@ -18,7 +18,8 @@ class JwtAuthMiddleware implements MiddlewareInterface
         if ($request->method() === 'OPTIONS') {
             response('', 204);
         }
-        $app = $params['app'] ?? 'default';
+        $app = \request()->app ?: 'default';
+        $app = $app === '' ? 'default' : $app;
         try {
             $requestToken = new RequestToken();
             $handel       = JwtAuth::getConfig($app)->getType();
