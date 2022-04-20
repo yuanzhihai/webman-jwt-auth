@@ -56,7 +56,7 @@ return [
 * signer 加密算法
 * type 获取 Token 途径
 * auto_refresh 开启过期自动续签
-* event_handler 操作token事件
+* event_handler token用户事件
 * user_model 用户模型
 
 ## Token 生成

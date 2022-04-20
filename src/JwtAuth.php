@@ -3,7 +3,6 @@
 namespace yzh52521\JwtAuth;
 
 use Lcobucci\JWT\Token;
-use yzh52521\JwtAuth\event\EventHandler;
 use yzh52521\JwtAuth\exception\TokenInvalidException;
 use yzh52521\JwtAuth\user\AuthorizationUserInterface;
 
@@ -22,7 +21,7 @@ class JwtAuth
     /**
      * @var Event
      */
-    protected $event;
+    protected Event $event;
 
     /**
      * @param string $store
@@ -39,10 +38,9 @@ class JwtAuth
      */
     protected User $user;
 
-    public function __construct($store = null, EventHandler $event = null)
+    public function __construct($store = null)
     {
         $this->config = $this->getConfig($store);
-        $this->event  = $event;
         $this->init();
     }
 
@@ -51,6 +49,9 @@ class JwtAuth
         $this->jwt = new Jwt($this, $this->config);
 
         $this->initUser();
+
+        $this->initEvent();
+
     }
 
     protected function initUser()
@@ -59,6 +60,14 @@ class JwtAuth
             $this->user = new User($model);
         }
     }
+
+    protected function initEvent()
+    {
+        if ($event = $this->config->getEventHandler()) {
+            $this->event = new Event($event);
+        }
+    }
+
 
     /**
      * 获取应用配置
@@ -153,6 +162,6 @@ class JwtAuth
             return $this->user->get($this->jwt);
         }
 
-        throw new TokenInvalidException('jwt.user_model required',500);
+        throw new TokenInvalidException('jwt.user_model required', 500);
     }
 }

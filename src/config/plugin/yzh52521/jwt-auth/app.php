@@ -15,8 +15,8 @@ return [
             'type'          => 'Header',
             'auto_refresh'  => false,
             'iss'           => 'webman.client.api',
-            'event_handler' => Event::class,
-            'user_model'    => User::class
+            'event_handler' => '',
+            'user_model'    => ''
         ],
         // 多应用
         'admin'   => [
@@ -29,8 +29,8 @@ return [
             'type'          => 'Header',
             'auto_refresh'  => false,
             'iss'           => 'webman.client.admin',
-            'event_handler' => Event::class,
-            'user_model'    => User::class
+            'event_handler' => '',
+            'user_model'    => ''
         ],
     ]
 ];

@@ -3,8 +3,6 @@
 namespace yzh52521\JwtAuth\facade;
 
 
-use \app\common\event\UserEvent;
-
 /**
  * @see \yzh52521\JwtAuth\JwtAuth
  * @mixin \yzh52521\JwtAuth\JwtAuth
@@ -23,8 +21,7 @@ class JwtAuth
     {
         if (!static::$_instance) {
             $app               = request()->app ?? null;
-            $eventContext      = new UserEvent($app);
-            static::$_instance = new \yzh52521\JwtAuth\JwtAuth($app, $eventContext);
+            static::$_instance = new \yzh52521\JwtAuth\JwtAuth($app);
         }
         return static::$_instance;
     }

@@ -19,7 +19,6 @@ class Install
      */
     public static function install()
     {
-        self::copyFile(__DIR__ . '/common/event', app_path() . '/common/event');
         static::installByRelation();
     }
 
@@ -73,29 +72,5 @@ class Install
         }
     }
 
-    protected static function copyFile($source, $destination, $child = 1)
-    {
-        if (!is_dir($source)) {
-            echo("Error:the $source is not a direction!");
-            return 0;
-        }
-        if (!is_dir($destination)) {
-            if (!mkdir($destination, 0777) && !is_dir($destination)) {
-                throw new \RuntimeException(sprintf('Directory "%s" was not created', $destination));
-            }
-        }
-        $handle = dir($source);
-        while ($entry = $handle->read()) {
-            if (($entry !== ".") && ($entry !== "..")) {
-                if (is_dir($source . "/" . $entry)) {
-                    if ($child) {
-                        self::copyFile($source . "/" . $entry, $destination . "/" . $entry, $child);
-                    }
-                } else {
-                    copy($source . "/" . $entry, $destination . "/" . $entry);
-                }
-            }
-        }
-    }
 
 }
