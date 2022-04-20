@@ -2,6 +2,7 @@
 
 namespace yzh52521\JwtAuth;
 
+use DateTimeInterface;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Token;
 use DateTimeZone;
@@ -11,6 +12,7 @@ use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use yzh52521\JwtAuth\Exception\JwtException;
+use yzh52521\JwtAuth\exception\TokenExpiredException;
 use yzh52521\JwtAuth\exception\TokenInvalidException;
 
 class Jwt
@@ -25,16 +27,16 @@ class Jwt
      */
     protected $auth;
 
-    public function __construct(JwtAuth $jwt)
+    public function __construct(JwtAuth $jwt, $config)
     {
-        $this->auth = $jwt;
+        $this->auth   = $jwt;
+        $this->config = $config;
 
         $this->init();
     }
 
     protected function init()
     {
-        $this->config = $this->auth->getConfig();
         $this->initJwtConfiguration();
     }
 
@@ -66,7 +68,8 @@ class Jwt
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now)
             ->expiresAt($this->getExpiryDateTime($now))
-            ->relatedTo($this->config->getSubject());
+            ->relatedTo($this->config->getSubject())
+            ->withClaim('store', $this->auth->getStore());
 
         foreach ($claims as $key => $value) {
             $builder->withClaim($key, $value);
@@ -117,7 +120,6 @@ class Jwt
 
         $jwtConfiguration->setValidationConstraints(
             new SignedWith($jwtConfiguration->signer(), $jwtConfiguration->signingKey()),
-            new LooseValidAt(new SystemClock(new DateTimeZone(\date_default_timezone_get()))),
         );
 
         $constraints = $jwtConfiguration->validationConstraints();
@@ -135,6 +137,71 @@ class Jwt
                     : $claim;
             })
             ->toArray();
+    }
+
+
+    /**
+     * 效验是否过期 Token
+     * @return void
+     */
+    public function validateExp(): void
+    {
+        $jwtConfiguration = $this->getValidateConfig();
+
+        $jwtConfiguration->setValidationConstraints(
+            new LooseValidAt(new SystemClock(new DateTimeZone(\date_default_timezone_get()))),
+        );
+
+        $constraints = $jwtConfiguration->validationConstraints();
+
+        if (!$jwtConfiguration->validator()->validate($this->token, ...$constraints)) {
+            throw new TokenExpiredException('The token is expired.');
+        }
+    }
+
+    /**
+     * 刷新时间是否过期
+     * @param DateTimeInterface $now
+     * @return bool
+     */
+    public function isRefreshExpired(DateTimeInterface $now): bool
+    {
+        if (!$this->token->claims()->has('iat')) {
+            return false;
+        }
+
+        $iat         = $this->token->claims()->get('iat');
+        $refresh_ttl = $this->config->getRefreshTTL();
+        $refresh_exp = $iat->modify("+{$refresh_ttl} sec");
+        return $now >= $refresh_exp;
+    }
+
+    /**
+     * Token 自动续期
+     *
+     * @param string $token
+     * @return Token
+     */
+    public function automaticRenewalToken(string $token): Token
+    {
+        $claims = $this->token->claims()->all();
+
+        $jti = $claims['jti'];
+        unset($claims['iss']);
+        unset($claims['jti']);
+        unset($claims['iat']);
+        unset($claims['nbf']);
+        unset($claims['exp']);
+        unset($claims['sub']);
+
+        $token     = $this->make($jti, $claims);
+        $refreshAt = $this->config->getRefreshTTL();
+
+        header('Access-Control-Expose-Headers:Automatic-Renewal-Token,Automatic-Renewal-Token-RefreshAt');
+        header("Automatic-Renewal-Token:" . $token->toString());
+        header("Automatic-Renewal-Token-RefreshAt:$refreshAt");
+
+        return $token;
     }
 
     /**

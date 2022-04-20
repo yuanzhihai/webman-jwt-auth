@@ -25,20 +25,30 @@ class JwtAuth
     protected $event;
 
     /**
+     * @param string $store
+     */
+    protected string $store;
+
+    /**
+     * @param $string $defaultStore
+     */
+    protected string $defaultStore = 'default';
+
+    /**
      * @var User
      */
     protected User $user;
 
-    public function __construct(Config $config, EventHandler $event = null)
+    public function __construct($store = null, EventHandler $event = null)
     {
-        $this->config = $config;
+        $this->config = $this->getConfig($store);
         $this->event  = $event;
         $this->init();
     }
 
     protected function init()
     {
-        $this->jwt = new Jwt($this);
+        $this->jwt = new Jwt($this, $this->config);
 
         $this->initUser();
     }
@@ -51,12 +61,36 @@ class JwtAuth
     }
 
     /**
-     * 获取 Token 配置
+     * 获取应用配置
+     * @return Config
      */
-    public function getConfig(): Config
+    public function getConfig($store)
     {
-        return $this->config;
+        if (!$store) {
+            $store = $this->getDefaultApp();
+        }
+        $options = config('plugin.yzh52521.jwt-auth.app.stores.' . $store);
+        return new Config($options);
     }
+
+    /**
+     * 获取应用
+     * @return string
+     */
+    public function getStore(): string
+    {
+        return $this->store ?? $this->getDefaultApp();
+    }
+
+    /**
+     * 获取默认应用
+     * @return string
+     */
+    protected function getDefaultApp(): string
+    {
+        return $this->defaultStore;
+    }
+
 
     /**
      * 生成 Token
@@ -81,6 +115,8 @@ class JwtAuth
     public function verify($token): array
     {
         $jwt = $this->jwt->validate($token);
+
+        $this->jwt->validateExp();
 
         $this->event && $this->event->verify($this->parseToken($token));
 

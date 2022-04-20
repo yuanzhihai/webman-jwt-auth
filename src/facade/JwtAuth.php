@@ -3,12 +3,12 @@
 namespace yzh52521\JwtAuth\facade;
 
 
-use yzh52521\JwtAuth\Config;
+use yzh52521\JwtAuth\Event;
 
 /**
  * @see \yzh52521\JwtAuth\JwtAuth
  * @mixin \yzh52521\JwtAuth\JwtAuth
- * @method static token($id,array $cliams) 生成 Token
+ * @method static token($id, array $cliams) 生成 Token
  * @method static verify($token) 检测合法性
  * @method static parseToken($token) 解析 Token
  * @method static getVerifyToken() 获取验证后的Token对象
@@ -22,8 +22,9 @@ class JwtAuth
     public static function instance()
     {
         if (!static::$_instance) {
-            $config = config('plugin.yzh52521.jwt-auth.app.jwt');
-            static::$_instance = new \yzh52521\JwtAuth\JwtAuth(new Config($config));
+            $app               = \request()->app ?: null;
+            $eventContext      = new Event($app);
+            static::$_instance = new \yzh52521\JwtAuth\JwtAuth($app, $eventContext);
         }
         return static::$_instance;
     }
