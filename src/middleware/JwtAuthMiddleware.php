@@ -12,21 +12,16 @@ use yzh52521\JwtAuth\facade\JwtAuth;
 class JwtAuthMiddleware implements MiddlewareInterface
 {
 
-    protected $app;
 
-    public function __construct()
-    {
-        $this->app = 'default';
-    }
-
-    public function process(Request $request, callable $next): Response
+    public function process(Request $request, callable $next, array $params = []): Response
     {
         if ($request->method() === 'OPTIONS') {
             response('', 204);
         }
+        $app = $params['app'] ?? 'default';
         try {
             $requestToken = new RequestToken();
-            $handel       = JwtAuth::getConfig($this->app)->getType();
+            $handel       = JwtAuth::getConfig($app)->getType();
             $token        = $requestToken->get($handel);
             JwtAuth::verify($token);
             $request->user = JwtAuth::getUser();
