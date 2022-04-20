@@ -2,7 +2,6 @@
 
 namespace yzh52521\JwtAuth\middleware;
 
-use Webman\App;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
@@ -12,14 +11,12 @@ use yzh52521\JwtAuth\facade\JwtAuth;
 
 class JwtAuthMiddleware implements MiddlewareInterface
 {
-    /**
-     * @param App
-     */
+
     protected $app;
 
-    public function __construct(App $app)
+    public function __construct()
     {
-        $this->app = $app;
+        $this->app = 'default';
     }
 
     public function process(Request $request, callable $next): Response
@@ -28,7 +25,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
             response('', 204);
         }
         try {
-            $requestToken = new RequestToken($this->app);
+            $requestToken = new RequestToken();
             $handel       = JwtAuth::getConfig($this->app)->getType();
             $token        = $requestToken->get($handel);
             JwtAuth::verify($token);

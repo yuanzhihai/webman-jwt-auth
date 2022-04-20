@@ -2,7 +2,6 @@
 
 namespace yzh52521\JwtAuth\handle;
 
-use Webman\App;
 use yzh52521\JwtAuth\exception\JwtException;
 
 class RequestToken
@@ -14,15 +13,6 @@ class RequestToken
      */
     protected $token;
 
-    /**
-     * @var App
-     */
-    protected $app;
-
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-    }
 
     /**
      * 获取请求Token.
@@ -40,7 +30,7 @@ class RequestToken
         foreach ($handles as $handle) {
             if (in_array($handle, $this->handles)) {
                 $namespace = '\\yzh52521\\JwtAuth\\handle\\' . $handle;
-                $token     = (new $namespace($this->app))->handle();
+                $token     = (new $namespace())->handle();
                 if ($token) {
                     $this->token = $token;
                     break;
