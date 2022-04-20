@@ -3,7 +3,7 @@
 namespace yzh52521\JwtAuth\facade;
 
 
-use yzh52521\JwtAuth\Event;
+use app\common\event\UserEvent;
 
 /**
  * @see \yzh52521\JwtAuth\JwtAuth
@@ -13,7 +13,7 @@ use yzh52521\JwtAuth\Event;
  * @method static parseToken($token) 解析 Token
  * @method static getVerifyToken() 获取验证后的Token对象
  * @method static getUser() 获取登录用户对象
- * @method static getConfig() 获取 Token 配置
+ * @method static getConfig($store = null) 获取 Token 配置
  */
 class JwtAuth
 {
@@ -22,8 +22,8 @@ class JwtAuth
     public static function instance()
     {
         if (!static::$_instance) {
-            $app               = \request()->app ?: null;
-            $eventContext      = new Event($app);
+            $app               = request()->app ?? null;
+            $eventContext      = new UserEvent($app);
             static::$_instance = new \yzh52521\JwtAuth\JwtAuth($app, $eventContext);
         }
         return static::$_instance;

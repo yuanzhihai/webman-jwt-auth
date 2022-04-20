@@ -64,7 +64,7 @@ class JwtAuth
      * 获取应用配置
      * @return Config
      */
-    public function getConfig($store)
+    public function getConfig($store = null): Config
     {
         if (!$store) {
             $store = $this->getDefaultApp();
