@@ -159,7 +159,7 @@ class Jwt
             if ($this->config->getAutoRefresh()) {
                 $now = new DateTimeImmutable();
                 if (!$this->isRefreshExpired($now)) {
-                    $this->token = $this->automaticRenewalToken();
+                     $this->automaticRenewalToken();
                 } else {
                     throw new TokenRefreshExpiredException('The token is refresh expired', 402);
                 }

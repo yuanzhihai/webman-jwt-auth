@@ -2,13 +2,23 @@
 
 namespace yzh52521\JwtAuth;
 
+use Lcobucci\JWT\Signer\Ecdsa\Sha256 as ES256;
+use Lcobucci\JWT\Signer\Ecdsa\Sha384 as ES384;
+use Lcobucci\JWT\Signer\Ecdsa\Sha512 as ES512;
+use Lcobucci\JWT\Signer\Hmac\Sha256 as HS256;
+use Lcobucci\JWT\Signer\Hmac\Sha384 as HS384;
+use Lcobucci\JWT\Signer\Hmac\Sha512 as HS512;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Hmac;
 use Lcobucci\JWT\Signer\Key\LocalFileReference;
 use Lcobucci\JWT\Signer\Rsa;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Rsa\Sha256 as RS256;
+use Lcobucci\JWT\Signer\Rsa\Sha384 as RS384;
+use Lcobucci\JWT\Signer\Rsa\Sha512 as RS512;
 use yzh52521\JwtAuth\event\EventHandler;
+use yzh52521\JwtAuth\exception\JwtException;
 use yzh52521\JwtAuth\exception\TokenInvalidException;
 
 class Config
@@ -33,9 +43,9 @@ class Config
 
     /**
      * Token 加密类型
-     * @var string
+     * @var \Lcobucci\JWT\Signer .
      */
-    protected $signer = \Lcobucci\JWT\Signer\Hmac\Sha256::class;
+    protected $signer = 'HS256';
 
     /**
      * Token 获取途径
@@ -81,6 +91,19 @@ class Config
      * @var EventHandler
      */
     protected $event_handler;
+
+
+    protected $signers = [
+        'HS256' => HS256::class,
+        'HS384' => HS384::class,
+        'HS512' => HS512::class,
+        'RS256' => RS256::class,
+        'RS384' => RS384::class,
+        'RS512' => RS512::class,
+        'ES256' => ES256::class,
+        'ES384' => ES384::class,
+        'ES512' => ES512::class,
+    ];
 
     public function __construct(array $options)
     {
@@ -197,7 +220,10 @@ class Config
      */
     public function getSigner(): Signer
     {
-        return new $this->signer;
+        if (!array_key_exists($this->signer, $this->signers)) {
+            throw new JWTException('The given signer could not be found');
+        }
+        return new $this->signers[$this->signer];
     }
 
 

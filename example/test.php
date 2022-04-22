@@ -12,7 +12,7 @@ $options = [
             'private_key'   => 'file://path/private.key',
             'expires_at'    => 3600,
             'refresh_ttL'   => 7200,
-            'signer'        => 'Lcobucci\JWT\Signer\Hmac\Sha256',
+            'signer'        => 'Sha256',
             'type'          => 'Header',
             'auto_refresh'  => false,
             'iss'           => 'client.tant',
@@ -23,4 +23,7 @@ $options = [
 ];
 
 $token = \yzh52521\JwtAuth\facade\JwtAuth::token(1, ['id' => 1, 'time' => time()])->toString();
-// var_dump($auth->parseToken($token));
+
+
+ // var_dump(\yzh52521\JwtAuth\facade\JwtAuth::verify($token));
+// var_dump(\yzh52521\JwtAuth\facade\JwtAuth::parseToken($token));

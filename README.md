@@ -48,6 +48,39 @@ return [
 
 ```
 
+## 说明
+> 目前支持如下三大类型加密方式：RSA,HASH,DSA。再各分256、384、512位。 默认是HS256，即hash 256位加密。
+>需要修改加密方式，请修改参数：signer，参数选项：
+HS256
+备注：hash 256位
+
+* HS384
+备注：hash 384位
+
+* HS512
+备注：hash 512位
+
+* RS256
+备注：rsa 256位
+
+* RS384
+备注：rsa 384位
+
+* RS512
+备注：rsa 512位
+
+* ES256
+备注：dsa 256位
+
+* ES384
+备注：dsa 384位
+
+* ES512
+备注：dsa 512位
+
+>重要：RSA和DSA 都是非对称加密方式，除了修改参数signer外，需要配置：PUBLIC_KEY、PRIVATE_KEY两个参数， 这两个参数密钥文件路径
+
+
 ## token
 
 * signer_key 密钥
