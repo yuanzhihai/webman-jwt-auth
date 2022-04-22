@@ -88,7 +88,7 @@ class Jwt
     protected function getExpiryDateTime($now): DateTimeImmutable
     {
         $ttl = (string)$this->config->getExpires();
-        return $now->modify("+{$ttl} minute");
+        return $now->modify("+{$ttl} sec");
     }
 
     /**
@@ -232,9 +232,12 @@ class Jwt
             return false;
         }
 
-        $refresh_ttl     = $this->config->getRefreshTTL();
-        $leeway          = $this->config->getleeway();
-        $refresh_expired = $leeway > 0 ? $iat->modify("+{$leeway} sec")->modify("+{$refresh_ttl} minute") : $iat->modify("+{$refresh_ttl} minute");
+        $refresh_ttl = $this->config->getRefreshTTL();
+        $leeway      = $this->config->getleeway();
+        if ($leeway > 0) {
+            $refresh_ttl += $leeway;
+        }
+        $refresh_expired = $iat->modify("+{$refresh_ttl} sec");
         return $now >= $refresh_expired;
     }
 

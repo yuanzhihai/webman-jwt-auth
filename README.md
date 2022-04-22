@@ -89,8 +89,8 @@ return [
 ## token
 
 * signer_key 密钥
-* expires_at Token有效期（分）
-* refresh_ttL 刷新有效期（分）
+* expires_at Token有效期（单位秒）
+* refresh_ttL 刷新有效期（单位秒）
 * leeway  时钟偏差冗余时间，单位秒。建议这个余地应该不大于几分钟。
 * signer 加密算法
 * type 获取 Token 途径
