@@ -33,7 +33,7 @@
 * ES512
   备注：dsa 512位
 
-> 重要：RSA和DSA 都是非对称加密方式，除了修改参数signer外，需要配置：PUBLIC_KEY、PRIVATE_KEY两个参数， 这两个参数密钥文件路径
+> 重要：RSA和DSA 都是非对称加密方式，除了修改参数signer外，需要配置：PUBLIC_KEY、PRIVATE_KEY两个参数， 这两个参数是密钥文件路径
 
 
 ## 安装
@@ -58,6 +58,7 @@ return [
             'private_key'   => 'file://path/private.key',
             'expires_at'    => 3600,
             'refresh_ttL'   => 7200,
+            'leeway'        => 0,
             'signer'        =>'HS256',
             'type'          => 'Header',
             'auto_refresh'  => false,
@@ -72,6 +73,7 @@ return [
             'private_key'   => 'file://path/private.key',
             'expires_at'    => 3600,
             'refresh_ttL'   => 7200,
+            'leeway'        => 0,
             'signer'        => 'HS256',
             'type'          => 'Header',
             'auto_refresh'  => false,
@@ -89,6 +91,7 @@ return [
 * signer_key 密钥
 * expires_at Token有效期（分）
 * refresh_ttL 刷新有效期（分）
+* leeway  时钟偏差冗余时间，单位秒。建议这个余地应该不大于几分钟。
 * signer 加密算法
 * type 获取 Token 途径
 * auto_refresh 开启过期自动续签

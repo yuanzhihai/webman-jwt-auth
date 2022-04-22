@@ -42,6 +42,12 @@ class Config
     protected $refresh_ttL = 7200;
 
     /**
+     * Token 时钟偏差冗余时间  This applies to the claims `iat`, `nbf` and `exp`.
+     * @var int
+     */
+    protected $leeway = 0;
+
+    /**
      * Token 加密类型
      * @var \Lcobucci\JWT\Signer .
      */
@@ -196,7 +202,20 @@ class Config
         return $this->refresh_ttL;
     }
 
+    /**
+     * 获取 leeway
+     * @return int
+     */
+    public function getleeway()
+    {
+        return $this->leeway;
+    }
 
+
+    /**
+     * 获取 subject
+     * @return string
+     */
     public function getSubject()
     {
         return md5(uniqid() . time() . rand(100000, 9999999));

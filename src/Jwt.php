@@ -126,7 +126,7 @@ class Jwt
         $constraints = $jwtConfiguration->validationConstraints();
 
         if (!$jwtConfiguration->validator()->validate($this->token, ...$constraints)) {
-            throw new TokenInvalidException('Token Signature could not be verified.',500);
+            throw new TokenInvalidException('Token Signature could not be verified.', 500);
         }
         return collect($this->token->claims()->all())
             ->map(function ($claim) {
@@ -142,10 +142,10 @@ class Jwt
 
 
     /**
-     * 效验是否过期 Token
-     * @return void
+     * Token 效验是否过期
+     * @return bool
      */
-    public function validateExp(): void
+    protected function validateExpired(): bool
     {
         $jwtConfiguration = $this->getValidateConfig();
 
@@ -155,11 +155,69 @@ class Jwt
 
         $constraints = $jwtConfiguration->validationConstraints();
 
-        if (!$jwtConfiguration->validator()->validate($this->token, ...$constraints)) {
+        return $jwtConfiguration->validator()->validate($this->token, ...$constraints);
+    }
+
+    /**
+     * 校验 Token 是否生效
+     * @param DateTimeInterface $now
+     * @return bool
+     */
+    protected function validateNotBefore(DateTimeInterface $now)
+    {
+        $nbf = $this->token->claims()->get('nbf');
+        if (!$nbf) {
+            return false;
+        }
+
+        $leeway = $this->config->getleeway();
+        if ($leeway > 0) {
+            $not_before = $nbf->modify("+{$leeway} minutes");
+            return $now >= $not_before;
+        }
+        return true;
+    }
+
+    /**
+     * 校验 Token 是否在签发时间内
+     * @param DateTimeInterface $now
+     * @return bool
+     */
+    protected function validateIssuedAt(DateTimeInterface $now)
+    {
+        $iat = $this->token->claims()->get('iat');
+        if (!$iat) {
+            return false;
+        }
+
+        $leeway = $this->config->getleeway();
+        if ($leeway > 0) {
+            $issued_at = $iat->modify("+{$leeway} minutes");
+            return $now >= $issued_at;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * 效验 Token Payload
+     * @return void
+     */
+    public function validatePayload(): void
+    {
+        $now = new DateTimeImmutable();
+        if (!$this->validateNotBefore($now)) {
+            throw new TokenInvalidException('Not Before (nbf) timestamp cannot be in the future', 403);
+        }
+        if (!$this->validateIssuedAt($now)) {
+            throw new TokenInvalidException('Issued At (iat) timestamp cannot be in the future', 403);
+        }
+
+        if (!$this->validateExpired()) {
             if ($this->config->getAutoRefresh()) {
-                $now = new DateTimeImmutable();
                 if (!$this->isRefreshExpired($now)) {
-                     $this->automaticRenewalToken();
+                    $this->automaticRenewalToken();
                 } else {
                     throw new TokenRefreshExpiredException('The token is refresh expired', 402);
                 }
@@ -175,13 +233,14 @@ class Jwt
      */
     public function isRefreshExpired(DateTimeInterface $now): bool
     {
-        if (!$this->token->claims()->has('iat')) {
+        $iat = $this->token->claims()->get('iat');
+        if (!$iat) {
             return false;
         }
 
-        $iat         = $this->token->claims()->get('iat');
         $refresh_ttl = $this->config->getRefreshTTL();
-        $refresh_exp = $iat->modify("+{$refresh_ttl} sec");
+        $leeway      = $this->config->getleeway();
+        $refresh_exp = $iat->modify("+{$leeway} minutes")->modify("+{$refresh_ttl} sec");
         return $now >= $refresh_exp;
     }
 
@@ -236,6 +295,6 @@ class Jwt
             return $this->token;
         }
 
-        throw new JwtException('Not logged in',404);
+        throw new JwtException('Not logged in', 404);
     }
 }
