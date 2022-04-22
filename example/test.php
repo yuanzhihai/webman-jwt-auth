@@ -12,10 +12,10 @@ $options = [
             'private_key'   => 'file://path/private.key',
             'expires_at'    => 3600,
             'refresh_ttL'   => 7200,
-            'signer'        => 'Sha256',
+            'signer'        => 'HS256',
             'type'          => 'Header',
             'auto_refresh'  => false,
-            'iss'           => 'client.tant',
+            'iss'           => 'webman.client.tant',
             'event_handler' => Event::class,
             'user_model'    => User::class
         ]
