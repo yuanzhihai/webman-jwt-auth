@@ -125,8 +125,6 @@ class JwtAuth
     {
         $jwt = $this->jwt->validate($token);
 
-        $this->jwt->validatePayload();
-
         $this->event && $this->event->verify($this->parseToken($token));
 
         return $jwt;

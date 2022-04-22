@@ -128,6 +128,27 @@ class Jwt
         if (!$jwtConfiguration->validator()->validate($this->token, ...$constraints)) {
             throw new TokenInvalidException('Token Signature could not be verified.', 500);
         }
+
+        $now = new DateTimeImmutable();
+
+        if (!$this->validateNotBefore($now)) {
+            throw new TokenInvalidException('Not Before (nbf) timestamp cannot be in the future', 403);
+        }
+        if (!$this->validateIssuedAt($now)) {
+            throw new TokenInvalidException('Issued At (iat) timestamp cannot be in the future', 403);
+        }
+
+        if (!$this->validateExpired()) {
+            if ($this->config->getAutoRefresh()) {
+                if (!$this->isRefreshExpired($now)) {
+                    $this->token = $this->automaticRenewalToken();
+                } else {
+                    throw new TokenRefreshExpiredException('The token is refresh expired', 402);
+                }
+            }
+            throw new TokenExpiredException('The token is expired.', 401);
+        }
+
         return collect($this->token->claims()->all())
             ->map(function ($claim) {
                 if (is_a($claim, \DateTimeImmutable::class)) {
@@ -201,32 +222,6 @@ class Jwt
 
 
     /**
-     * 效验 Token Payload
-     * @return void
-     */
-    public function validatePayload(): void
-    {
-        $now = new DateTimeImmutable();
-        if (!$this->validateNotBefore($now)) {
-            throw new TokenInvalidException('Not Before (nbf) timestamp cannot be in the future', 403);
-        }
-        if (!$this->validateIssuedAt($now)) {
-            throw new TokenInvalidException('Issued At (iat) timestamp cannot be in the future', 403);
-        }
-
-        if (!$this->validateExpired()) {
-            if ($this->config->getAutoRefresh()) {
-                if (!$this->isRefreshExpired($now)) {
-                    $this->automaticRenewalToken();
-                } else {
-                    throw new TokenRefreshExpiredException('The token is refresh expired', 402);
-                }
-            }
-            throw new TokenExpiredException('The token is expired.', 401);
-        }
-    }
-
-    /**
      * 刷新时间是否过期
      * @param DateTimeInterface $now
      * @return bool
@@ -238,10 +233,10 @@ class Jwt
             return false;
         }
 
-        $refresh_ttl = $this->config->getRefreshTTL();
-        $leeway      = $this->config->getleeway();
-        $refresh_exp = $iat->modify("+{$leeway} minutes")->modify("+{$refresh_ttl} sec");
-        return $now >= $refresh_exp;
+        $refresh_ttl     = $this->config->getRefreshTTL();
+        $leeway          = $this->config->getleeway();
+        $refresh_expired = $leeway > 0 ? $iat->modify("+{$leeway} minutes")->modify("+{$refresh_ttl} sec") : $iat->modify("+{$refresh_ttl} sec");
+        return $now >= $refresh_expired;
     }
 
     /**
