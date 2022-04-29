@@ -18,7 +18,7 @@ class User
         if ($class instanceof AuthorizationUserInterface) {
             $this->model = $class;
         } else {
-            throw new TokenInvalidException('must be implements yzh52521\JwtAuth\user\AuthorizationUserInterface',500);
+            throw new TokenInvalidException('must be implements yzh52521\JwtAuth\user\AuthorizationUserInterface', 500);
         }
     }
 
@@ -32,7 +32,8 @@ class User
     {
         $token      = $jwt->getVerifyToken();
         $identifier = $token->claims()->get('jti');
+        $uid        = explode('_', $identifier)[1];
 
-        return $this->model->getUserById($identifier);
+        return $this->model->getUserById($uid);
     }
 }
