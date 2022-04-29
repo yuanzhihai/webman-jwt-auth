@@ -68,9 +68,9 @@ class Jwt
     {
         $now = new DateTimeImmutable();
         if ($this->config->getLoginType() == 'mpo') {
-            $uniqid = uniqid($this->auth->getStore() . '_') . "_" . $identifier;
+            $uniqid = uniqid($this->auth->getStore() . ':') . ":" . $identifier;
         } else {
-            $uniqid = $this->auth->getStore() . "_" . $identifier;
+            $uniqid = $this->auth->getStore() . ":" . $identifier;
         }
         $builder = $this->jwtConfiguration->builder()
             ->issuedBy($this->config->getIss())

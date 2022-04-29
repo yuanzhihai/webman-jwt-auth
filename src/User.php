@@ -32,7 +32,8 @@ class User
     {
         $token      = $jwt->getVerifyToken();
         $identifier = $token->claims()->get('jti');
-        $uid        = explode('_', $identifier)[1];
+        $identifier = explode(':', $identifier);
+        $uid = end($identifier);
 
         return $this->model->getUserById($uid);
     }

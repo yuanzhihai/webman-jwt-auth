@@ -4,17 +4,12 @@ namespace yzh52521\JwtAuth;
 
 use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
-use Psr\SimpleCache\CacheInterface;
-use support\Cache;
+use support\Redis;
 use yzh52521\JwtAuth\support\Utils;
 
 class BlackList
 {
     protected $prefix;
-    /**
-     * @var CacheInterface
-     */
-    public $cache;
 
     /**
      * @var Manager
@@ -28,7 +23,6 @@ class BlackList
 
     public function __construct(JwtAuth $jwt, Manager $manager)
     {
-        $this->cache   = Cache::class;
         $this->auth    = $jwt;
         $this->manager = $manager;
         $this->prefix  = $manager->getBlacklistPrefix();
@@ -61,7 +55,7 @@ class BlackList
              */
             $tokenCacheTime = $this->getTokenCacheTime($claims);
             if ($tokenCacheTime > 0) {
-                return $this->cache::set($cacheKey, ['valid_until' => $validUntil], $tokenCacheTime);
+                return Redis::setEx($cacheKey, $tokenCacheTime, serialize(['valid_until' => $validUntil]));
             }
         }
         return false;
@@ -97,7 +91,7 @@ class BlackList
     {
         $cacheKey = $this->getCacheKey($claims->get('jti'));
         if ($this->manager->getBlacklistEnabled()) {
-            $val = $this->cache::get($cacheKey);
+            $val = unserialize(Redis::get($cacheKey));
             if ($config->getLoginType() == 'mpo') {
                 return !empty($val['valid_until']) && !Utils::isFuture($val['valid_until']);
             }
@@ -119,8 +113,8 @@ class BlackList
     public function remove($token): bool
     {
         $claims = $token->claims();
-        $key    = $this->prefix . '_' . $claims->get('jti');
-        return $this->cache::delete($key);
+        $key    = $this->prefix . ':' . $claims->get('jti');
+        return Redis::del($key);
     }
 
     /**
@@ -129,7 +123,8 @@ class BlackList
      */
     public function clear(): bool
     {
-        return $this->cache::delete("{$this->prefix}.*");
+        $keys = Redis::keys("{$this->prefix}:*");
+        return Redis::del($keys);
     }
 
     /**
@@ -138,7 +133,7 @@ class BlackList
      */
     private function getCacheKey(string $jti): string
     {
-        return "{$this->prefix}_" . $jti;
+        return "{$this->prefix}:" . $jti;
     }
 
 }

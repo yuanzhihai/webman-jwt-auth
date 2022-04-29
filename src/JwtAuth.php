@@ -156,7 +156,7 @@ class JwtAuth
      * 刷新token
      * @return Token
      */
-    public function refreshToken()
+    public function refresh()
     {
         return $this->jwt->refreshToken();
     }

@@ -8,7 +8,7 @@ namespace yzh52521\JwtAuth\facade;
  * @mixin \yzh52521\JwtAuth\JwtAuth
  * @method static token($id, array $cliams) 生成 Token
  * @method static verify($token) 检测Token合法性
- * @method static refreshToken() 刷新Token 返回新Token
+ * @method static refresh() 刷新Token 返回新Token
  * @method static logout($token) 注销Token
  * @method static parseToken($token) 解析 Token
  * @method static getVerifyToken() 获取验证后的Token对象
