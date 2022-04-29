@@ -169,7 +169,7 @@ class JwtAuth
      */
     public function logout($token)
     {
-        $this->event && $this->event->logout($this->parseToken($token)) && $this->blackList->addTokenBlack($this->parseToken($token),$this->config);
+        $this->event && $this->event->logout($this->parseToken($token)) && $this->blackList->addTokenBlack($this->parseToken($token), $this->config);
 
         return true;
     }
@@ -193,9 +193,32 @@ class JwtAuth
         return $this->jwt->getVerifyToken();
     }
 
+
+    /**
+     * 移除黑名单Token
+     * @param $token
+     * @return bool
+     */
+    public function removeBlackList($token): bool
+    {
+        $this->blackList->remove($this->parseToken($token));
+        return true;
+    }
+
+    /**
+     * 移除所有的token缓存
+     * @return bool
+     */
+    public function clearBlackList(): bool
+    {
+        $this->blackList->clear();
+        return true;
+    }
+
+
     /**
      * 获取token动态有效时间
-     * @param $token
+     * @param string|null $token
      * @return int
      */
     public function getTokenExpirationTime(string $token = null): int

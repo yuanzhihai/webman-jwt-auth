@@ -11,6 +11,7 @@ use yzh52521\JwtAuth\support\Utils;
 
 class BlackList
 {
+    protected $prefix;
     /**
      * @var CacheInterface
      */
@@ -31,6 +32,7 @@ class BlackList
         $this->cache   = Cache::class;
         $this->auth    = $jwt;
         $this->manager = $manager;
+        $this->prefix  = $manager->getBlacklistPrefix();
     }
 
     /**
@@ -111,11 +113,13 @@ class BlackList
 
     /**
      * 黑名单移除token
-     * @param $key
+     * @param $token
      * @return bool
      */
-    public function remove($key)
+    public function remove($token)
     {
+        $claims = $token->claims();
+        $key    = $this->prefix . '_' . $claims->get('jti');
         return $this->cache::delete($key);
     }
 
@@ -125,8 +129,7 @@ class BlackList
      */
     public function clear()
     {
-        $cachePrefix = $this->manager->getBlacklistPrefix();
-        return $this->cache::delete("{$cachePrefix}.*");
+        return $this->cache::delete("{$this->prefix}.*");
     }
 
     /**
@@ -135,7 +138,7 @@ class BlackList
      */
     private function getCacheKey(string $jti)
     {
-        return "{$this->manager->getBlacklistPrefix()}_" . $jti;
+        return "{$this->prefix}_" . $jti;
     }
 
 }

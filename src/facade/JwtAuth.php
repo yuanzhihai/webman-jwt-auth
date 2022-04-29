@@ -15,6 +15,8 @@ namespace yzh52521\JwtAuth\facade;
  * @method static getUser() 获取登录用户对象
  * @method static getTokenExpirationTime($token = null) 获取Token动态有效时间
  * @method static getConfig($store = null) 获取 Token 配置
+ * @method static removeBlackList($token) 移除黑名单Token
+ * @method static clearBlackList() 清空所有的token缓存黑名单
  */
 class JwtAuth
 {
