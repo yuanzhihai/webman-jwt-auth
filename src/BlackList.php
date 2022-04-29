@@ -56,8 +56,13 @@ class BlackList
                  */
                 $validUntil = Utils::now()->subSeconds(1)->getTimestamp();
             }
+            /**
+             * 缓存时间取当前时间跟jwt过期时间的差值，单位秒
+             */
             $tokenCacheTime = $this->getTokenCacheTime($claims);
-            return $this->cache::set($cacheKey, ['valid_until' => $validUntil], $tokenCacheTime);
+            if ($tokenCacheTime > 0) {
+                return $this->cache::set($cacheKey, ['valid_until' => $validUntil], $tokenCacheTime);
+            }
         }
         return false;
     }
