@@ -102,7 +102,7 @@ class BlackList
                 return !empty($val['valid_until']) && !Utils::isFuture($val['valid_until']);
             }
             if ($config->getLoginType() == 'sso') {
-                $iatTime = Utils::getTimeByTokenTime($claims->get(RegisteredClaims::ISSUED_AT));
+                $iatTime = Utils::getTimeByTokenTime($claims->get(RegisteredClaims::ISSUED_AT))->getTimestamp();;
                 if (!empty($iatTime) && !empty($val['valid_until'])) {
                     return $iatTime <= $val['valid_until'];
                 }
