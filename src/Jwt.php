@@ -2,15 +2,11 @@
 
 namespace yzh52521\JwtAuth;
 
-use DateTimeInterface;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Token;
-use DateTimeZone;
 use DateTimeImmutable;
 use Exception;
-use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Validation\Constraint\IdentifiedBy;
-use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use yzh52521\JwtAuth\Exception\JwtException;
 use yzh52521\JwtAuth\exception\TokenExpiredException;
@@ -26,14 +22,20 @@ class Jwt
     protected $config;
 
     /**
+     * @var Manager
+     */
+    protected $manager;
+
+    /**
      * @var JwtAuth
      */
     protected $auth;
 
-    public function __construct(JwtAuth $jwt, $config)
+    public function __construct(JwtAuth $jwt, $config, $manager)
     {
-        $this->auth   = $jwt;
-        $this->config = $config;
+        $this->auth    = $jwt;
+        $this->config  = $config;
+        $this->manager = $manager;
 
         $this->init();
     }
@@ -64,8 +66,12 @@ class Jwt
      */
     public function make($identifier, array $claims = []): Token
     {
-        $now     = new DateTimeImmutable();
-        $uniqid  = $this->auth->getStore() . "_" . $identifier;
+        $now = new DateTimeImmutable();
+        if ($this->config->getLoginType() == 'mpo') {
+            $uniqid = uniqid($this->auth->getStore() . '_') . "_" . $identifier;
+        } else {
+            $uniqid = $this->auth->getStore() . "_" . $identifier;
+        }
         $builder = $this->jwtConfiguration->builder()
             ->issuedBy($this->config->getIss())
             ->identifiedBy($uniqid)
@@ -79,7 +85,12 @@ class Jwt
             $builder->withClaim($key, $value);
         }
 
-        return $builder->getToken($this->jwtConfiguration->signer(), $this->jwtConfiguration->signingKey());
+        $token = $builder->getToken($this->jwtConfiguration->signer(), $this->jwtConfiguration->signingKey());
+
+        // 单点登录要把所有的以前生成的token都失效
+        if ($this->config->getLoginType() == 'sso') $this->auth->blackList->addTokenBlack($token,$this->config);
+
+        return $token;
     }
 
 
@@ -120,13 +131,13 @@ class Jwt
     {
         $this->token = $this->parseToken($token);
 
-        $claims = $this->token->claims()->all();
+        $claims = $this->token->claims();
 
         $jwtConfiguration = $this->getValidateConfig();
 
         $jwtConfiguration->setValidationConstraints(
             new SignedWith($jwtConfiguration->signer(), $jwtConfiguration->signingKey()),
-            new IdentifiedBy($claims['jti']->getValue()),
+            new IdentifiedBy($claims->get('jti'))
         );
 
         $constraints = $jwtConfiguration->validationConstraints();
@@ -135,18 +146,23 @@ class Jwt
             throw new TokenInvalidException('Token Signature could not be verified.', 500);
         }
 
+        // 验证token是否存在黑名单
+        if ($this->manager->getBlacklistEnabled() && $this->auth->blackList->hasTokenBlack($claims, $this->config)) {
+            throw new TokenInvalidException('The token is in blacklist', 401);
+        }
+
         $leeway = $this->config->getleeway();
 
-        if (Utils::isFuture($claims['nbf'], $leeway)) {
+        if (Utils::isFuture($claims->get('nbf')->getTimestamp(), $leeway)) {
             throw new TokenInvalidException('Not Before (nbf) timestamp cannot be in the future', 403);
         }
-        if (Utils::isFuture($claims['iat'], $leeway)) {
+        if (Utils::isFuture($claims->get('iat')->getTimestamp(), $leeway)) {
             throw new TokenInvalidException('Issued At (iat) timestamp cannot be in the future', 403);
         }
 
-        if (Utils::isPast($claims['exp'], $leeway)) {
+        if (Utils::isPast($claims->get('exp')->getTimestamp(), $leeway)) {
             if ($this->config->getAutoRefresh()) {
-                if (Utils::isPast($claims['iat'] + $this->config->getRefreshTTL(), $leeway)) {
+                if (Utils::isPast($claims->get('iat')->getTimestamp() + $this->config->getRefreshTTL(), $leeway)) {
                     $this->token = $this->automaticRenewalToken();
                 } else {
                     throw new TokenRefreshExpiredException('The token is refresh expired', 402);
@@ -155,7 +171,7 @@ class Jwt
             throw new TokenExpiredException('The token is expired.', 401);
         }
 
-        return $this->claimsToArray($claims);
+        return $this->claimsToArray($claims->all());
     }
 
     /**
@@ -177,6 +193,23 @@ class Jwt
             ->toArray();
     }
 
+    /**
+     * 刷新token
+     * @return Token
+     */
+    public function refreshToken()
+    {
+        try {
+            $claims     = $this->token->claims()->all();
+            $jti        = explode('_', $claims['jti']);
+            $identifier = end($jti);
+            unset($claims['iss'], $claims['iat'], $claims['nbf'], $claims['exp'], $claims['jti'], $claims['sub']);
+            return $this->make($identifier, $claims);
+        } catch (JwtException $e) {
+            throw new JwtException($e->getMessage(), $e->getCode(), $e->getPrevious());
+        }
+    }
+
 
     /**
      * Token 自动续期
@@ -187,15 +220,10 @@ class Jwt
     {
         $claims = $this->token->claims()->all();
 
-        $user_id = explode('_', $claims['jti'])[1];
-        unset($claims['iss']);
-        unset($claims['jti']);
-        unset($claims['iat']);
-        unset($claims['nbf']);
-        unset($claims['exp']);
-        unset($claims['sub']);
+        $identifier = explode('_', $claims['jti']);
+        unset($claims['iss'], $claims['jti'], $claims['iat'], $claims['nbf'], $claims['exp'], $claims['sub']);
 
-        $token     = $this->make($user_id, $claims);
+        $token     = $this->make(end($identifier), $claims);
         $refreshAt = $this->config->getRefreshTTL();
 
         response()->withHeaders([

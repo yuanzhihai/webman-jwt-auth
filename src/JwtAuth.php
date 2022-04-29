@@ -4,6 +4,7 @@ namespace yzh52521\JwtAuth;
 
 use Lcobucci\JWT\Token;
 use yzh52521\JwtAuth\exception\TokenInvalidException;
+use yzh52521\JwtAuth\support\Utils;
 use yzh52521\JwtAuth\user\AuthorizationUserInterface;
 
 class JwtAuth
@@ -12,6 +13,8 @@ class JwtAuth
      * @var Config
      */
     protected Config $config;
+
+    protected $manager;
 
     /**
      * @var Jwt
@@ -38,15 +41,24 @@ class JwtAuth
      */
     protected User $user;
 
+    /**
+     * @var BlackList
+     */
+    public $blackList;
+
     public function __construct($store = null)
     {
-        $this->config = $this->getConfig($store);
+        $this->config  = $this->getConfig($store);
+        $this->manager = $this->getManager();
+
         $this->init();
     }
 
     protected function init()
     {
-        $this->jwt = new Jwt($this, $this->config);
+        $this->jwt = new Jwt($this, $this->config, $this->manager);
+
+        $this->blackList = new BlackList($this, $this->manager);
 
         $this->initUser();
 
@@ -80,6 +92,16 @@ class JwtAuth
         }
         $options = config('plugin.yzh52521.jwt-auth.app.stores.' . $store);
         return new Config($options);
+    }
+
+    /**
+     * 获取黑名单配置
+     * @return Manager
+     */
+    public function getManager(): Manager
+    {
+        $options = config('plugin.yzh52521.jwt-auth.app.manager') ?? [];
+        return new Manager($options);
     }
 
     /**
@@ -131,6 +153,28 @@ class JwtAuth
     }
 
     /**
+     * 刷新token
+     * @return Token
+     */
+    public function refreshToken()
+    {
+        return $this->jwt->refreshToken();
+    }
+
+
+    /**
+     * 退出让token失效
+     * @param $token
+     * @return bool
+     */
+    public function logout($token)
+    {
+        $this->event && $this->event->logout($this->parseToken($token)) && $this->blackList->addTokenBlack($this->parseToken($token),$this->config);
+
+        return true;
+    }
+
+    /**
      * 解析 Token
      * @param $token
      * @return Token
@@ -147,6 +191,20 @@ class JwtAuth
     public function getVerifyToken(): Token
     {
         return $this->jwt->getVerifyToken();
+    }
+
+    /**
+     * 获取token动态有效时间
+     * @param $token
+     * @return int
+     */
+    public function getTokenExpirationTime(string $token = null): int
+    {
+        $now = Utils::now()->getTimestamp();
+        if (empty($token)) $token = $this->getVerifyToken();
+        $exp = $this->parseToken($token)->claims()->get('exp');
+        return $exp->getTimestamp() - $now;
+
     }
 
     /**

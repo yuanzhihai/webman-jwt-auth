@@ -61,4 +61,19 @@ class Utils
             ? $timestamp->subSeconds($leeway)->isFuture()
             : $timestamp->isFuture();
     }
+
+    /**
+     *
+     * @param $tokenTime
+     * @return Carbon
+     */
+    public static function getTimeByTokenTime($tokenTime): Carbon
+    {
+        $timestamp = $tokenTime;
+        if (!is_numeric($tokenTime)) {
+            $timestamp = $tokenTime->getTimestamp();
+        }
+
+        return self::timestamp($timestamp);
+    }
 }

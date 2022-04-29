@@ -98,6 +98,12 @@ class Config
      */
     protected $event_handler;
 
+    /**
+     * 登录方式 sso为单点登录，mpo为多点登录
+     * @var
+     */
+    protected $login_type = 'mpo';
+
 
     protected $signers = [
         'HS256' => HS256::class,
@@ -284,5 +290,15 @@ class Config
     public function getUserModel()
     {
         return $this->user_model;
+    }
+
+    /**
+     * 获取登录方式
+     *
+     * @return string
+     */
+    public function getLoginType()
+    {
+        return $this->login_type;
     }
 }
