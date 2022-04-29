@@ -169,7 +169,9 @@ class JwtAuth
      */
     public function logout($token)
     {
-        $this->event && $this->event->logout($this->parseToken($token)) && $this->blackList->addTokenBlack($this->parseToken($token), $this->config);
+        $this->event && $this->event->logout($this->parseToken($token));
+
+        $this->blackList->addTokenBlack($this->parseToken($token), $this->config);
 
         return true;
     }
