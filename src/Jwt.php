@@ -201,7 +201,7 @@ class Jwt
     {
         try {
             $claims     = $this->token->claims()->all();
-            $jti        = explode('_', $claims['jti']);
+            $jti        = explode(':', $claims['jti']);
             $identifier = end($jti);
             unset($claims['iss'], $claims['iat'], $claims['nbf'], $claims['exp'], $claims['jti'], $claims['sub']);
             return $this->make($identifier, $claims);
@@ -220,9 +220,10 @@ class Jwt
     {
         $claims = $this->token->claims()->all();
 
-        $identifier = explode('_', $claims['jti']);
+        $jti = explode(':', $claims['jti']);
         unset($claims['iss'], $claims['jti'], $claims['iat'], $claims['nbf'], $claims['exp'], $claims['sub']);
 
+        $identifier = end($jti);
         $token     = $this->make(end($identifier), $claims);
         $refreshAt = $this->config->getRefreshTTL();
 
