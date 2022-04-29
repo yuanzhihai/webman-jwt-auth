@@ -6,7 +6,6 @@ use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use Psr\SimpleCache\CacheInterface;
 use support\Cache;
-use Xmo\JWTAuth\Util\TimeUtil;
 use yzh52521\JwtAuth\support\Utils;
 
 class BlackList
@@ -89,24 +88,20 @@ class BlackList
      * @param $claims
      * @return bool
      */
-    public function hasTokenBlack($claims, Config $config)
+    public function hasTokenBlack($claims, Config $config): bool
     {
         $cacheKey = $this->getCacheKey($claims->get('jti'));
-        if ($this->manager->getBlacklistEnabled() && $config->getLoginType() == 'mpo') {
+        if ($this->manager->getBlacklistEnabled()) {
             $val = $this->cache::get($cacheKey);
-            return !empty($val['valid_until']) && !Utils::isFuture($val['valid_until']);
-        }
-
-        if ($this->manager->getBlacklistEnabled() && $config->getLoginType() == 'sso') {
-            $val = $this->cache::get($cacheKey);
-            // 这里为什么要大于等于0，因为在刷新token时，缓存时间跟签发时间可能一致，详细请看刷新token方法
-            if (!is_null($claims->get('iat')) && !empty($val['valid_until'])) {
-                $isFuture = ($claims->get('iat')->getTimestamp() - $val['valid_until']) >= 0;
-            } else {
-                $isFuture = false;
+            if ($config->getLoginType() == 'mpo') {
+                return !empty($val['valid_until']) && !Utils::isFuture($val['valid_until']);
             }
-            // check whether the expiry + grace has past
-            return !$isFuture;
+            if ($config->getLoginType() == 'sso') {
+                $iatTime = Utils::getTimeByTokenTime($claims->get(RegisteredClaims::ISSUED_AT));
+                if (!empty($iatTime) && !empty($val['valid_until'])) {
+                    return $iatTime <= $val['valid_until'];
+                }
+            }
         }
         return false;
     }
@@ -116,7 +111,7 @@ class BlackList
      * @param $token
      * @return bool
      */
-    public function remove($token)
+    public function remove($token): bool
     {
         $claims = $token->claims();
         $key    = $this->prefix . '_' . $claims->get('jti');
@@ -127,7 +122,7 @@ class BlackList
      * 移除所有的token缓存
      * @return bool
      */
-    public function clear()
+    public function clear(): bool
     {
         return $this->cache::delete("{$this->prefix}.*");
     }
@@ -136,7 +131,7 @@ class BlackList
      * @param string $jti
      * @return string
      */
-    private function getCacheKey(string $jti)
+    private function getCacheKey(string $jti): string
     {
         return "{$this->prefix}_" . $jti;
     }
