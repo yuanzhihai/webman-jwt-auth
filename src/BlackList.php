@@ -41,7 +41,7 @@ class BlackList
             $cacheKey = $this->getCacheKey($claims->get('jti'));
             if ($config->getLoginType() == 'mpo') {
                 $blacklistGracePeriod = $this->manager->getBlacklistGracePeriod();
-                $iatTime              = $claims->get(RegisteredClaims::ISSUED_AT);
+                $iatTime              = Utils::getTimeByTokenTime($claims->get(RegisteredClaims::ISSUED_AT));
                 $validUntil           = $iatTime->addSeconds($blacklistGracePeriod)->getTimestamp();
             } else {
                 /**
