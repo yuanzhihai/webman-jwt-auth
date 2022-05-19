@@ -24,7 +24,7 @@ class JwtAuth
     /**
      * @var Event
      */
-    protected Event $event;
+    protected $event;
 
     /**
      * @param string $store
@@ -87,10 +87,12 @@ class JwtAuth
      */
     public function getConfig($store = null): Config
     {
-        if (!$store) {
-            $store = $this->getDefaultApp();
+        if ($store) {
+            $this->store = $store;
+        } else {
+            $this->store = $this->getDefaultApp();
         }
-        $options = config('plugin.yzh52521.jwt-auth.app.stores.' . $store);
+        $options = config('plugin.yzh52521.jwt-auth.app.stores.' . $this->store);
         return new Config($options);
     }
 
