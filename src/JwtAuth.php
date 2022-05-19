@@ -39,7 +39,7 @@ class JwtAuth
     /**
      * @var User
      */
-    protected User $user;
+    protected $user;
 
     /**
      * @var BlackList
