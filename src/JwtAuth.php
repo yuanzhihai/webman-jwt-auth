@@ -3,6 +3,7 @@
 namespace yzh52521\JwtAuth;
 
 use Lcobucci\JWT\Token;
+use yzh52521\JwtAuth\exception\JwtException;
 use yzh52521\JwtAuth\exception\TokenInvalidException;
 use yzh52521\JwtAuth\support\Utils;
 use yzh52521\JwtAuth\user\AuthorizationUserInterface;
@@ -93,7 +94,12 @@ class JwtAuth
             $this->store = $this->getDefaultApp();
         }
         $options = config('plugin.yzh52521.jwt-auth.app.stores.' . $this->store);
-        return new Config($options);
+
+        if (!empty($options)) {
+            return new Config($options);
+        } else {
+            throw new JWTException($store . 'app token configuration is incomplete', 500);
+        }
     }
 
     /**
