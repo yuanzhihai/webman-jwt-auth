@@ -20,15 +20,15 @@ namespace yzh52521\JwtAuth\facade;
  */
 class JwtAuth
 {
-    protected static $_instance = null;
+    protected static $_instance = [];
 
     public static function instance()
     {
-        if (!static::$_instance) {
-            $app               = request()->app ?? null;
-            static::$_instance = new \yzh52521\JwtAuth\JwtAuth($app);
+        $app = \request()->app ?? 'default';
+        if (!isset(static::$_instance[$app])) {
+            static::$_instance[$app] = new \yzh52521\JwtAuth\JwtAuth($app);
         }
-        return static::$_instance;
+        return static::$_instance[$app];
     }
 
 
