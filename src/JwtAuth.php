@@ -98,7 +98,7 @@ class JwtAuth
         if (!empty($options)) {
             return new Config($options);
         } else {
-            throw new JWTException($store . 'app token configuration is incomplete', 500);
+            throw new JwtException($store . 'app token configuration is incomplete', 500);
         }
     }
 
