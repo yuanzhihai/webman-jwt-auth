@@ -224,7 +224,7 @@ class Jwt
         unset($claims['iss'], $claims['jti'], $claims['iat'], $claims['nbf'], $claims['exp'], $claims['sub']);
 
         $identifier = end($jti);
-        $token     = $this->make(end($identifier), $claims);
+        $token     = $this->make($identifier, $claims);
         $refreshAt = $this->config->getRefreshTTL();
 
         response()->withHeaders([
