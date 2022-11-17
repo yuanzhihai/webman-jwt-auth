@@ -17,7 +17,6 @@ namespace yzh52521\JwtAuth\facade;
  * @method static getConfig( $store = null ) 获取 Token 配置
  * @method static removeBlackList( $token ) 移除黑名单Token
  * @method static clearBlackList() 清空所有的token缓存黑名单
- * @method static setStore($store) 设置应用
  */
 class JwtAuth
 {

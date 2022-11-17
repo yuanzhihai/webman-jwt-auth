@@ -121,16 +121,6 @@ class JwtAuth
         return $this->store ?? $this->getDefaultApp();
     }
 
-    /**
-     * 设置应用
-     * @param $store
-     * @return $this
-     */
-    public function setStore($store): self
-    {
-        $this->store = $store;
-        return $this;
-    }
 
     /**
      * 获取默认应用
