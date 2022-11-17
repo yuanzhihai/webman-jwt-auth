@@ -49,7 +49,7 @@ class JwtAuth
 
     public function __construct($store = null)
     {
-        $this->config  = $this->getConfig($store);
+        $this->config  = $this->getConfig( $store );
         $this->manager = $this->getManager();
 
         $this->init();
@@ -57,9 +57,9 @@ class JwtAuth
 
     protected function init()
     {
-        $this->jwt = new Jwt($this, $this->config, $this->manager);
+        $this->jwt = new Jwt( $this,$this->config,$this->manager );
 
-        $this->blackList = new BlackList($this, $this->manager);
+        $this->blackList = new BlackList( $this,$this->manager );
 
         $this->initUser();
 
@@ -70,14 +70,14 @@ class JwtAuth
     protected function initUser()
     {
         if ($model = $this->config->getUserModel()) {
-            $this->user = new User($model);
+            $this->user = new User( $model );
         }
     }
 
     protected function initEvent()
     {
         if ($event = $this->config->getEventHandler()) {
-            $this->event = new Event($event);
+            $this->event = new Event( $event );
         }
     }
 
@@ -93,12 +93,12 @@ class JwtAuth
         } else {
             $this->store = $this->getDefaultApp();
         }
-        $options = config('plugin.yzh52521.jwt-auth.app.stores.' . $this->store);
+        $options = config( 'plugin.yzh52521.jwt-auth.app.stores.'.$this->store );
 
-        if (!empty($options)) {
-            return new Config($options);
+        if (!empty( $options )) {
+            return new Config( $options );
         } else {
-            throw new JwtException($store . 'app token configuration is incomplete', 500);
+            throw new JwtException( $store.'app token configuration is incomplete',500 );
         }
     }
 
@@ -108,8 +108,8 @@ class JwtAuth
      */
     public function getManager(): Manager
     {
-        $options = config('plugin.yzh52521.jwt-auth.app.manager') ?? [];
-        return new Manager($options);
+        $options = config( 'plugin.yzh52521.jwt-auth.app.manager' ) ?? [];
+        return new Manager( $options );
     }
 
     /**
@@ -119,6 +119,17 @@ class JwtAuth
     public function getStore(): string
     {
         return $this->store ?? $this->getDefaultApp();
+    }
+
+    /**
+     * 设置应用
+     * @param $store
+     * @return $this
+     */
+    public function setStore($store): self
+    {
+        $this->store = $store;
+        return $this;
     }
 
     /**
@@ -137,11 +148,11 @@ class JwtAuth
      * @param array $cliams
      * @return Token
      */
-    public function token($id, array $cliams = []): Token
+    public function token($id,array $cliams = []): Token
     {
-        $token = $this->jwt->make($id, $cliams);
+        $token = $this->jwt->make( $id,$cliams );
 
-        $this->event && $this->event->login($token);
+        $this->event && $this->event->login( $token );
 
         return $token;
     }
@@ -153,9 +164,9 @@ class JwtAuth
      */
     public function verify($token): array
     {
-        $jwt = $this->jwt->validate($token);
+        $jwt = $this->jwt->validate( $token );
 
-        $this->event && $this->event->verify($this->parseToken($token));
+        $this->event && $this->event->verify( $this->parseToken( $token ) );
 
         return $jwt;
     }
@@ -177,9 +188,9 @@ class JwtAuth
      */
     public function logout($token)
     {
-        $this->blackList->addTokenBlack($this->parseToken($token), $this->config);
+        $this->blackList->addTokenBlack( $this->parseToken( $token ),$this->config );
 
-        $this->event && $this->event->logout($this->parseToken($token));
+        $this->event && $this->event->logout( $this->parseToken( $token ) );
 
         return true;
     }
@@ -191,7 +202,7 @@ class JwtAuth
      */
     public function parseToken($token): Token
     {
-        return $this->jwt->parseToken($token);
+        return $this->jwt->parseToken( $token );
     }
 
     /**
@@ -211,7 +222,7 @@ class JwtAuth
      */
     public function removeBlackList($token): bool
     {
-        $this->blackList->remove($this->parseToken($token));
+        $this->blackList->remove( $this->parseToken( $token ) );
 
         return true;
     }
@@ -236,8 +247,8 @@ class JwtAuth
     public function getTokenExpirationTime(string $token = null): int
     {
         $now = Utils::now()->getTimestamp();
-        if (empty($token)) $token = $this->getVerifyToken();
-        $exp = $this->parseToken($token)->claims()->get('exp');
+        if (empty( $token )) $token = $this->getVerifyToken();
+        $exp = $this->parseToken( $token )->claims()->get( 'exp' );
         return $exp->getTimestamp() - $now;
 
     }
@@ -250,9 +261,9 @@ class JwtAuth
     public function getUser()
     {
         if ($this->user) {
-            return $this->user->get($this->jwt);
+            return $this->user->get( $this->jwt );
         }
 
-        throw new TokenInvalidException('jwt.user_model required', 500);
+        throw new TokenInvalidException( 'jwt.user_model required',500 );
     }
 }
