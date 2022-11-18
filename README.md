@@ -238,7 +238,8 @@ auto_refresh => true
 前端需要接收最新 Token，下次异步请求时，携带此 Token。
 
 
-> 默认是在应用目录里使用 如跨应用 生成token 验证token 解析token
+> 备注 ：多应用 默认是在应用目录里使用 
+> 跨应用 生成token 验证token 解析token 等使用如下
 
 ```
     实例化 参数应用名  
