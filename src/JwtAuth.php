@@ -15,6 +15,8 @@ class JwtAuth
      */
     protected Config $config;
 
+    protected $jwtConfig = [];
+
     protected $manager;
 
     /**
@@ -49,6 +51,12 @@ class JwtAuth
 
     public function __construct($store = null)
     {
+        $config = config( 'plugin.yzh52521.jwt-auth.app' );
+        $stores = $config['stores'];
+        foreach ( $stores as $key => $scene ) {
+            $this->jwtConfig[$key] = $scene;
+        }
+        $store && $this->store = $store;
         $this->config  = $this->getConfig( $store );
         $this->manager = $this->getManager();
 
@@ -93,7 +101,7 @@ class JwtAuth
         } else {
             $this->store = $this->getDefaultApp();
         }
-        $options = config( 'plugin.yzh52521.jwt-auth.app.stores.'.$this->store );
+        $options = $this->jwtConfig[$this->store];
 
         if (!empty( $options )) {
             return new Config( $options );

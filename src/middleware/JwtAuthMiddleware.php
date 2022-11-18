@@ -12,9 +12,6 @@ use yzh52521\JwtAuth\facade\JwtAuth;
 class JwtAuthMiddleware implements MiddlewareInterface
 {
 
-    protected $jwt;
-
-
     public function process(Request $request,callable $next): Response
     {
         if ($request->method() === 'OPTIONS') {
@@ -23,14 +20,14 @@ class JwtAuthMiddleware implements MiddlewareInterface
         if ($route = $request->route) {
             $store = $route->param( 'store' );
         }
-        $store     = $store ?? ( \request()->app === '' ? 'default' : \request()->app );
-        $this->jwt = new \yzh52521\JwtAuth\JwtAuth( $store );
+        $store   = $store ?? ( \request()->app === '' ? 'default' : \request()->app );
+        $JwtAuth = new \yzh52521\JwtAuth\JwtAuth( $store );
         try {
             $requestToken = new RequestToken();
-            $jwtConfig    = $this->jwt->getConfig();
+            $jwtConfig    = $JwtAuth->getConfig();
             $handel       = $jwtConfig->getType();
             $token        = $requestToken->get( $handel );
-            $this->jwt->verify( $token );
+            $JwtAuth->verify( $token );
             $jwtConfig->getUserModel() && $request->user = JwtAuth::getUser();
             return $next( $request );
         } catch ( JwtException $e ) {
