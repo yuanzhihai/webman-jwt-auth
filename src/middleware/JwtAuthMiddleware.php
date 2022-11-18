@@ -13,24 +13,25 @@ class JwtAuthMiddleware implements MiddlewareInterface
 {
 
 
-    public function process(Request $request, callable $next): Response
+    public function process(Request $request,callable $next): Response
     {
-        if ( $request->method() === 'OPTIONS' ) {
-            response('', 204);
+        if ($request->method() === 'OPTIONS') {
+            response( '',204 );
         }
-        if ( $route = $request->route ) {
-            $store = $route->param('store');
+        if ($route = $request->route) {
+            $store = $route->param( 'store' );
         }
         $store = $store ?? ( \request()->app === '' ? 'default' : \request()->app );
         try {
             $requestToken = new RequestToken();
-            $handel       = JwtAuth::getConfig($store)->getType();
-            $token        = $requestToken->get($handel);
-            JwtAuth::verify($token);
-            $request->user = JwtAuth::getUser();
-            return $next($request);
+            $jwtConfig    = JwtAuth::getConfig( $store );
+            $handel       = $jwtConfig->getType();
+            $token        = $requestToken->get( $handel );
+            JwtAuth::verify( $token );
+            $jwtConfig->getUserModel() && $request->user = JwtAuth::getUser();
+            return $next( $request );
         } catch ( JwtException $e ) {
-            throw new JwtException($e->getMessage(), $e->getCode());
+            throw new JwtException( $e->getMessage(),$e->getCode() );
         }
     }
 }
