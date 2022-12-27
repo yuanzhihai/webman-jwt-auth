@@ -192,11 +192,6 @@ $jwt =JwtAuth::refresh();
   JwtAuth::getTokenExpirationTime($token=null);
 ```
 
-## Token 获取过期时间
-
-```
-  JwtAuth::getTokenExpirationTime($token=null);
-```
 
 ## Token 移除黑名单token(指定某个)
 
