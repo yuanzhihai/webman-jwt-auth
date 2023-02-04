@@ -102,6 +102,7 @@ class BlackList
             if ($config->getLoginType() == 'sso') {
                 $iatTime = Utils::getTimeByTokenTime( $claims->get( RegisteredClaims::ISSUED_AT ) )->getTimestamp();;
                 if (!empty( $iatTime ) && !empty( $val['valid_until'] )) {
+                    // 当前token的签发时间小于等于缓存的签发时间，则证明当前token无效
                     return $iatTime <= $val['valid_until'];
                 }
             }
