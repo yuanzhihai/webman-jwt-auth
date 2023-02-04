@@ -39,16 +39,16 @@ class BlackList
         $claims = $token->claims();
         if ($this->manager->getBlacklistEnabled()) {
             $cacheKey = $this->getCacheKey( $claims->get( 'jti' ) );
+            $iatTime              = Utils::getTimeByTokenTime( $claims->get( RegisteredClaims::ISSUED_AT ) );
             if ($config->getLoginType() == 'mpo') {
                 $blacklistGracePeriod = $this->manager->getBlacklistGracePeriod();
-                $iatTime              = Utils::getTimeByTokenTime( $claims->get( RegisteredClaims::ISSUED_AT ) );
                 $validUntil           = $iatTime->addSeconds( $blacklistGracePeriod )->getTimestamp();
             } else {
                 /**
                  * 为什么要取当前的时间戳？
                  * 是为了在单点登录下，让这个时间前当前用户生成的token都失效，可以把这个用户在多个端都踢下线
                  */
-                $validUntil = Utils::now()->subSeconds( 1 )->getTimestamp();
+                $validUntil           = $iatTime->subSeconds( 1 )->getTimestamp();
             }
             /**
              * 缓存时间取当前时间跟jwt过期时间的差值，单位秒
