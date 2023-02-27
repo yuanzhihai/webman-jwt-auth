@@ -11,20 +11,8 @@ class BlackList
 {
     protected $prefix;
 
-    /**
-     * @var Manager
-     */
-    protected $manager;
-
-    /**
-     * @var JwtAuth
-     */
-    protected $auth;
-
-    public function __construct(JwtAuth $jwt,Manager $manager)
+    public function __construct(protected JwtAuth $auth,protected Manager $manager)
     {
-        $this->auth    = $jwt;
-        $this->manager = $manager;
         $this->prefix  = $manager->getBlacklistPrefix();
     }
 

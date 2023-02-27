@@ -7,12 +7,8 @@ use yzh52521\JwtAuth\exception\TokenInvalidException;
 
 class Event
 {
-    /**
-     * @var EventHandler
-     */
-    protected $handle;
 
-    public function __construct($handle = null)
+    public function __construct(protected $handle = null)
     {
         if ($handle) {
             $class = new $handle;

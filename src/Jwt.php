@@ -16,27 +16,9 @@ use yzh52521\JwtAuth\support\Utils;
 
 class Jwt
 {
-    /**
-     * @var Config
-     */
-    protected $config;
 
-    /**
-     * @var Manager
-     */
-    protected $manager;
-
-    /**
-     * @var JwtAuth
-     */
-    protected $auth;
-
-    public function __construct(JwtAuth $jwt,$config,$manager)
+    public function __construct(protected JwtAuth $auth,protected $config,protected $manager)
     {
-        $this->auth    = $jwt;
-        $this->config  = $config;
-        $this->manager = $manager;
-
         $this->init();
     }
 

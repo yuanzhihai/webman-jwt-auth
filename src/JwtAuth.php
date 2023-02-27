@@ -30,11 +30,6 @@ class JwtAuth
     protected $event;
 
     /**
-     * @param string $store
-     */
-    protected string $store;
-
-    /**
      * @param $string $defaultStore
      */
     protected string $defaultStore = 'default';
@@ -49,14 +44,13 @@ class JwtAuth
      */
     public $blackList;
 
-    public function __construct($store = null)
+    public function __construct(protected $store = null)
     {
         $config = config( 'plugin.yzh52521.jwt-auth.app' );
         $stores = $config['stores'];
         foreach ( $stores as $key => $scene ) {
             $this->jwtConfig[$key] = $scene;
         }
-        $store && $this->store = $store;
         $this->config  = $this->getConfig( $store );
         $this->manager = $this->getManager();
 
