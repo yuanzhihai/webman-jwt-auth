@@ -11,7 +11,7 @@
   "require": {
     "php": ">=7.4",
     "workerman/webman-framework": "^1.2.1",
-    "lcobucci/jwt": "^4.1",
+    "lcobucci/jwt": "^4.1 || ^5.0",
     "nesbot/carbon": "^1.0 || ^2.0"
   },
   "autoload": {
