@@ -17,6 +17,8 @@ use yzh52521\JwtAuth\support\Utils;
 class Jwt
 {
 
+    public Token $token;
+
     public function __construct(protected JwtAuth $auth,protected $config,protected $manager)
     {
         $this->init();
