@@ -27,6 +27,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
             $handel       = $jwtConfig->getType();
             $token        = $requestToken->get( $handel );
             $JwtAuth->verify( $token );
+            $request->jwt = $JwtAuth;
             $jwtConfig->getUserModel() && $request->user = $JwtAuth->getUser();
             return $next( $request );
         } catch ( JwtException $e ) {
