@@ -130,11 +130,6 @@ class Jwt
             throw new TokenInvalidException( 'Token Signature could not be verified.',500 );
         }
 
-        // 验证token是否存在黑名单
-        if ($this->manager->getBlacklistEnabled() && $this->auth->blackList->hasTokenBlack( $claims,$this->config )) {
-            throw new TokenInvalidException( 'The token is in blacklist',401 );
-        }
-
         $leeway = $this->config->getleeway();
 
         if (Utils::isFuture( $claims->get( 'nbf' )->getTimestamp(),$leeway )) {
@@ -146,13 +141,18 @@ class Jwt
 
         if (Utils::isPast( $claims->get( 'exp' )->getTimestamp(),$leeway )) {
             if ($this->config->getAutoRefresh()) {
-                if (Utils::isPast( $claims->get( 'iat' )->getTimestamp() + $this->config->getRefreshTTL(),$leeway )) {
+                if (Utils::isFuture( $claims->get( 'iat' )->getTimestamp() + $this->config->getRefreshTTL(),$leeway )) {
                     $this->automaticRenewalToken();
                 } else {
                     throw new TokenRefreshExpiredException( 'The token is refresh expired',402 );
                 }
             }
             throw new TokenExpiredException( 'The token is expired.',401 );
+        }
+
+        // 验证token是否存在黑名单
+        if ($this->manager->getBlacklistEnabled() && $this->auth->blackList->hasTokenBlack( $claims,$this->config )) {
+            throw new TokenInvalidException( 'The token is in blacklist',401 );
         }
 
         return $this->claimsToArray( $claims->all() );
