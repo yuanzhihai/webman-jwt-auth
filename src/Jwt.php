@@ -203,6 +203,8 @@ class Jwt
      */
     public function automaticRenewalToken()
     {
+        $this->auth->blackList->addTokenBlack(  $this->token,$this->config);
+
         $claims = $this->token->claims()->all();
 
         $jti = explode( ':',$claims['jti'] );

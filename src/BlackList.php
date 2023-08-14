@@ -2,7 +2,7 @@
 
 namespace yzh52521\JwtAuth;
 
-use Lcobucci\JWT\Token\Plain;
+use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use support\Redis;
 use yzh52521\JwtAuth\support\Utils;
@@ -18,12 +18,12 @@ class BlackList
 
     /**
      * 把token加入到黑名单中
-     * @param Plain $token
+     * @param Token $token
      * @param Config $config
      * @param bool $addByCreateTokenMethod
      * @return bool
      */
-    public function addTokenBlack(Plain $token, Config $config, bool $addByCreateTokenMethod = false): bool
+    public function addTokenBlack(Token $token, Config $config, bool $addByCreateTokenMethod = false): bool
     {
         $claims = $token->claims();
         if ($this->manager->getBlacklistEnabled()) {
