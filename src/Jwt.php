@@ -72,7 +72,7 @@ class Jwt
         $token = $builder->getToken( $this->jwtConfiguration->signer(),$this->jwtConfiguration->signingKey() );
 
         // 单点登录要把所有的以前生成的token都失效
-        if ($this->config->getLoginType() == 'sso') $this->auth->blackList->addTokenBlack( $token,$this->config );
+        if ($this->config->getLoginType() == 'sso') $this->auth->blackList->addTokenBlack( $token,$this->config,true );
 
         return $token;
     }

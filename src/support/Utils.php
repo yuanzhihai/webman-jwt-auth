@@ -13,7 +13,7 @@ class Utils
      */
     public static function now()
     {
-        return Carbon::now('UTC');
+        return Carbon::now(date_default_timezone_get());
     }
 
     /**
@@ -25,7 +25,7 @@ class Utils
      */
     public static function timestamp($timestamp)
     {
-        return Carbon::createFromTimestampUTC($timestamp)->timezone('UTC');
+        return Carbon::createFromTimestamp($timestamp, date_default_timezone_get());
     }
 
     /**
