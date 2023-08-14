@@ -37,13 +37,14 @@ class BlackList
                  * 为什么要取当前的时间戳？
                  * 是为了在单点登录下，让这个时间前当前用户生成的token都失效，可以把这个用户在多个端都踢下线
                  */
-                $validUntil = Utils::now()->subSeconds(1)->getTimestamp();
                 // fix: SSO模式签发时间可能会跟黑名单缓存校验时间一致,因为创建token是先签发，后加入黑名单，所以就算获取当前时间-1秒，也还有可能一致
                 // 处理方式是：
                 // 如果是创建token，则使用token的签发时间-1秒为黑名单缓存校验时间
-                // 如果是刷新token，则使用当前时间-1秒为黑名单校验缓存时间(刷新token是先加入加入黑名单，后生成token)
+                // 如果是刷新token或者退出token，则使用当前时间-1秒为黑名单校验缓存时间(刷新token是先加入加入黑名单，后生成token)
                 if ($addByCreateTokenMethod) {
-                    $validUntil = $iatTime->subSeconds(1)->getTimestamp();
+                    $validUntil = $iatTime->subSeconds()->getTimestamp();
+                } else {
+                    $validUntil = Utils::now()->subSeconds()->getTimestamp();
                 }
             }
             /**

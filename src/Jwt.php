@@ -6,6 +6,7 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Token;
 use DateTimeImmutable;
 use Exception;
+use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Validation\Constraint\IdentifiedBy;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use yzh52521\JwtAuth\Exception\JwtException;
@@ -46,7 +47,7 @@ class Jwt
      * 生成 Token
      * @param $identifier
      * @param array $claims
-     * @return $token
+     * @return Token
      */
     public function make($identifier,array $claims = []): Token
     {
@@ -184,6 +185,7 @@ class Jwt
     public function refreshToken()
     {
         try {
+            $this->auth->blackList->addTokenBlack(  $this->token,$this->config);
             $claims     = $this->token->claims()->all();
             $jti        = explode( ':',$claims['jti'] );
             $identifier = end( $jti );
