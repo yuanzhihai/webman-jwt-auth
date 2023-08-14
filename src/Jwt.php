@@ -6,7 +6,6 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Token;
 use DateTimeImmutable;
 use Exception;
-use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Validation\Constraint\IdentifiedBy;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use yzh52521\JwtAuth\Exception\JwtException;
