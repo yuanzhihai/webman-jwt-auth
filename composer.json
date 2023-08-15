@@ -1,5 +1,6 @@
 {
   "name": "yzh52521/webman-jwt-auth",
+  "description":"Lcobucci/jwt Integration For webman",
   "license": "MIT",
   "authors": [
     {
