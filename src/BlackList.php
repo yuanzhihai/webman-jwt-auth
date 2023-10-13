@@ -90,7 +90,7 @@ class BlackList
         if ($this->manager->getBlacklistEnabled()) {
             $cacheValue = Redis::get($cacheKey);
             if ($cacheValue == null) {
-                return true;
+                return false;
             }
             $val = unserialize($cacheValue);
             if ($config->getLoginType() == 'mpo') {
